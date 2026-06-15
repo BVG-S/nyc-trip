@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NYC Food Crawl — Live Itinerary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15171C;--ink-2:#5B6168;--paper:#F4F5F2;--card:#FFFFFF;--line:#E2E4DF;
+    --red:#E0382B;--green:#1C7A4C;--amber:#D98A11;--violet:#6E48A8;
+    --green-soft:#E6F1EB;--amber-soft:#FBF0DB;--violet-soft:#EFE9F6;--red-soft:#FBE6E3;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:720px;margin:0 auto;padding:0 18px 150px;}
+
+  nav{position:sticky;top:0;z-index:50;background:var(--ink);display:flex;gap:2px;padding:8px 10px;justify-content:center;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.18);}
+  nav a{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.06em;color:#C9CDC7;text-decoration:none;padding:7px 11px;border-radius:7px;text-transform:uppercase;}
+  nav a:hover,nav a:focus{background:#2A2D34;color:#fff;outline:none;}
+
+  header.hero{padding:30px 0 16px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);font-weight:600;margin:0 0 10px;}
+  h1{font-family:'Archivo',sans-serif;font-weight:900;line-height:.95;font-size:clamp(36px,10vw,62px);letter-spacing:-.02em;margin:0;text-transform:uppercase;}
+  h1 .yr{color:var(--red);}
+  .subline{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-2);margin:14px 0 0;line-height:1.7;}
+  .route-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .pill{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;background:var(--ink);color:#fff;padding:6px 11px;border-radius:20px;}
+  .pill.out{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
+
+  /* progress */
+  .progwrap{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+  .progtop{display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-2);}
+  .progtop b{color:var(--ink);font-size:13px;}
+  .progtop button{font-family:'IBM Plex Mono',monospace;font-size:11px;background:none;border:none;color:var(--green);cursor:pointer;text-decoration:underline;}
+  .progbar{height:7px;background:var(--line);border-radius:6px;margin-top:9px;overflow:hidden;}
+  .progbar i{display:block;height:100%;background:var(--green);width:0;transition:width .35s ease;}
+
+  .crew{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0;}
+  .who{display:flex;align-items:flex-start;gap:8px;flex:1 1 200px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
+  .dot{width:13px;height:13px;border-radius:50%;margin-top:4px;flex:none;}
+  .who b{display:block;font-size:14px;}.who span{font-size:12.5px;color:var(--ink-2);line-height:1.35;}
+  .d-suda{background:var(--green);}.d-keer{background:var(--violet);}.d-srav{background:var(--amber);}
+
+  h2{font-family:'Archivo',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;font-size:24px;margin:40px 0 4px;}
+  .h2sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-2);margin:0 0 16px;letter-spacing:.04em;}
+
+  /* live weather */
+  .wx-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  .wx-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-2);}
+  .wx-status button{font-family:'IBM Plex Mono',monospace;font-size:11px;background:none;border:none;color:var(--green);cursor:pointer;text-decoration:underline;margin-left:6px;}
+  .weather{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+  .wx{flex:1 1 120px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .wx .big{font-family:'Archivo';font-weight:900;font-size:30px;line-height:1;}
+  .wx .lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em;margin-top:6px;}
+  .wx.live{background:var(--ink);color:#fff;}
+  .wx.live .lbl{color:#9aa0a6;}
+  .wx-note{font-size:12.5px;color:var(--ink-2);margin-top:9px;}
+
+  .info{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+  .info p{margin:0 0 10px;font-size:14.5px;}.info p:last-child{margin-bottom:0;}
+  .info .k{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--green);font-weight:600;display:block;margin-bottom:2px;letter-spacing:.04em;}
+
+  .alerts{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .alerts .top{background:var(--red);color:#fff;padding:12px 16px;font-family:'Archivo';font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:15px;}
+  .alerts ol{margin:0;padding:14px 18px 16px 36px;}
+  .alerts li{margin:0 0 11px;font-size:14.5px;}.alerts li:last-child{margin-bottom:0;}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em;}
+  .tag.move{background:var(--red-soft);color:var(--red);}.tag.note{background:var(--amber-soft);color:var(--amber);}
+
+  /* day + timeline */
+  .dayhead{display:flex;align-items:baseline;gap:12px;border-top:3px solid var(--ink);padding-top:12px;margin-top:30px;}
+  .dayhead .num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--red);font-weight:600;}
+  .dayhead .dy{font-family:'Archivo';font-weight:900;font-size:26px;text-transform:uppercase;line-height:1;}
+  .dayhead .dt{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-2);margin-left:auto;text-align:right;}
+  .daynote{font-size:13.5px;color:var(--ink-2);margin:8px 0 6px;font-style:italic;}
+
+  .tl{position:relative;margin:14px 0 0;padding-left:74px;}
+  .tl::before{content:"";position:absolute;left:60px;top:6px;bottom:10px;width:2px;background:var(--line);}
+  .stop{position:relative;margin-bottom:18px;}
+  .stop .time{position:absolute;left:-74px;top:2px;width:56px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);}
+  .stop .time small{display:block;color:var(--ink-2);font-weight:400;font-size:10.5px;}
+  .stop::before{content:"";position:absolute;left:-20px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--card);border:2.5px solid var(--green);}
+  .stop.eat::before{border-color:var(--amber);}
+  .stop.move::before{border-color:var(--ink-2);background:var(--ink-2);}
+  .stop.star::before{border-color:var(--red);background:var(--red);}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 15px;transition:opacity .2s;}
+  .card.optional{border-style:dashed;}
+  .card.done{opacity:.5;}
+  .card.done .name{text-decoration:line-through;}
+  .cardhead{display:flex;align-items:flex-start;gap:10px;}
+  .chk{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:2px solid var(--line);border-radius:6px;flex:none;cursor:pointer;margin-top:1px;position:relative;background:var(--card);}
+  .chk:checked{background:var(--green);border-color:var(--green);}
+  .chk:checked::after{content:"✓";position:absolute;inset:0;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;}
+  .name{font-family:'Archivo';font-weight:800;font-size:17px;letter-spacing:-.01em;flex:1;}
+  .menubtn{font-family:'IBM Plex Mono',monospace;font-size:11px;border:1px solid var(--line);background:transparent;border-radius:8px;padding:4px 9px;cursor:pointer;color:var(--ink-2);white-space:nowrap;flex:none;}
+  .menubtn:hover{border-color:var(--amber);color:var(--amber);}
+  .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-2);margin:6px 0 0;line-height:1.6;}
+  .meta .hrs{color:var(--green);}
+  .getting{font-size:13px;color:var(--ink-2);margin:8px 0 0;}.getting b{color:var(--ink);}
+  .desc{font-size:13.5px;margin:9px 0 0;}
+  .flag{font-size:12.5px;color:var(--red);margin:9px 0 0;display:flex;gap:6px;}.flag::before{content:"⚠";flex:none;}
+  .mapwrap{margin:12px 0 6px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--card);}
+  .daymap{width:100%;height:190px;border:0;display:block;}
+  .routebtn{display:block;text-align:center;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#fff;background:var(--green);text-decoration:none;letter-spacing:.01em;}
+  .routebtn:hover{background:#15633d;}
+
+  .menu{display:none;margin-top:11px;border-top:1px dashed var(--line);padding-top:11px;}
+  .card.menu-open .menu{display:block;animation:drop .25s ease;}
+  @keyframes drop{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+  .menu .mt{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px;}
+  .orders{display:flex;flex-direction:column;gap:6px;}
+  .ord{display:flex;gap:9px;align-items:flex-start;font-size:13px;}
+  .tagp{flex:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:.03em;margin-top:1px;min-width:46px;text-align:center;}
+  .tp-suda{background:var(--green-soft);color:var(--green);}.tp-keer{background:var(--violet-soft);color:var(--violet);}
+  .tp-srav{background:var(--amber-soft);color:var(--amber);}.tp-all{background:var(--ink);color:#fff;}
+  .price{font-family:'IBM Plex Mono',monospace;color:var(--ink-2);font-size:12px;font-weight:400;}
+  .name .price{font-weight:400;}
+
+  /* fireworks */
+  .fw{background:var(--ink);color:#fff;border-radius:16px;padding:18px;}
+  .fw.done{opacity:.5;}
+  .fwhead{display:flex;align-items:flex-start;gap:10px;}
+  .fwt{font-family:'Archivo';font-weight:900;text-transform:uppercase;font-size:21px;line-height:1;color:#fff;flex:1;}
+  .fwt span{color:var(--red);}
+  .fw.done .fwt{text-decoration:line-through;}
+  .when{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);margin:9px 0 11px;letter-spacing:.04em;}
+  .fw p{font-size:13.5px;color:#D6D9D3;margin:0 0 9px;}.fw b{color:#fff;}
+  .fw ul{margin:6px 0 0;padding-left:18px;}.fw li{font-size:13px;color:#D6D9D3;margin-bottom:5px;}
+
+  .budget{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden;}
+  .budget td{padding:11px 15px;border-bottom:1px solid var(--line);font-size:14px;}
+  .budget tr:last-child td{border-bottom:none;font-weight:600;background:var(--ink);color:#fff;}
+  .budget td.amt{text-align:right;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+
+  footer{margin-top:44px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-2);line-height:1.7;}
+
+  /* chat */
+  #chat{position:fixed;left:0;right:0;bottom:0;z-index:80;display:flex;justify-content:center;pointer-events:none;}
+  .chatbox{pointer-events:auto;width:100%;max-width:720px;margin:0 14px;background:var(--card);border:1px solid var(--line);border-bottom:none;border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.14);overflow:hidden;}
+  .chatbar{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--ink);color:#fff;}
+  .chatbar .ai{width:9px;height:9px;border-radius:50%;background:#46d39a;box-shadow:0 0 0 4px rgba(70,211,154,.2);}
+  .chatbar b{font-family:'Archivo';font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:14px;flex:1;}
+  .chatbar .chev{font-family:'IBM Plex Mono';font-size:13px;color:#9aa0a6;}
+  .chatbody{display:none;flex-direction:column;max-height:62vh;}
+  #chat.open .chatbody{display:flex;}
+  .msgs{padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;}
+  .msg{font-size:13.5px;padding:9px 12px;border-radius:12px;max-width:85%;line-height:1.45;}
+  .msg.u{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:4px;}
+  .msg.b{align-self:flex-start;background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:4px;}
+  .msg.b.sys{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--ink-2);background:transparent;border:none;padding:2px 4px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px;}
+  .chip{font-size:12px;border:1px solid var(--line);background:var(--paper);border-radius:16px;padding:5px 10px;cursor:pointer;color:var(--ink-2);}
+  .chip:hover{border-color:var(--green);color:var(--green);}
+  .inputrow{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);}
+  .inputrow input{flex:1;border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-family:'Inter';font-size:14px;outline:none;}
+  .inputrow input:focus{border-color:var(--green);}
+  .inputrow button{border:none;background:var(--green);color:#fff;border-radius:11px;padding:0 16px;font-weight:600;font-size:14px;cursor:pointer;font-family:'Inter';}
+  .inputrow button:disabled{opacity:.5;cursor:default;}
+
+  @media (prefers-reduced-motion:no-preference){.dayhead,.info,.alerts{animation:rise .5s ease both;}@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}}
+  @media(max-width:480px){.tl{padding-left:64px;}.tl::before{left:50px;}.stop .time{left:-64px;width:50px;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#thu">Thu</a><a href="#fri">Fri</a><a href="#sat">Sat</a><a href="#sun">Sun</a><a href="#wx">Weather</a><a href="#money">$</a>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Halethorpe → New York City · Independence Day</p>
+    <h1>Three Friends,<br>One Food Map,<br>July <span class="yr">2–5</span></h1>
+    <p class="subline">BASE&nbsp;: Vernon Terrace, Poughkeepsie · MOVE&nbsp;: Metro-North, daily · RULE&nbsp;: walk &amp; transit only</p>
+    <div class="route-strip">
+      <span class="pill">BUS IN · THU 7:10 PM · PABT</span>
+      <span class="pill out">BUS OUT · SUN 3:00 PM · PABT</span>
+    </div>
+
+    <div class="progwrap">
+      <div class="progtop"><span>Trip progress — <b><span id="pdone">0</span> / <span id="ptot">0</span></b> stops done</span><button id="resetbtn">reset</button></div>
+      <div class="progbar"><i id="pbar"></i></div>
+    </div>
+
+    <div class="crew">
+      <div class="who"><span class="dot d-suda"></span><div><b>Suda</b><span>Veg + vegan-friendly · no egg, mushroom, meat/fish</span></div></div>
+      <div class="who"><span class="dot d-keer"></span><div><b>Keer</b><span>Non-veg · no beef, pork, mushroom</span></div></div>
+      <div class="who"><span class="dot d-srav"></span><div><b>Srav</b><span>Non-veg · no beef, pork</span></div></div>
+    </div>
+  </header>
+
+  <!-- LIVE WEATHER -->
+  <section id="wx">
+    <div class="wx-head">
+      <div><h2 style="margin-bottom:0;">Weather</h2><p class="h2sub" style="margin-bottom:0;">Live NYC feed — refreshes on its own</p></div>
+      <div class="wx-status"><span id="wxstatus">loading…</span><button id="wxrefresh">refresh</button></div>
+    </div>
+    <div class="weather" id="wxcards">
+      <div class="wx live"><div class="big" id="wxnow">—</div><div class="lbl">Right now · F</div></div>
+      <div class="wx"><div class="big" id="wxhi">—</div><div class="lbl">Today high · F</div></div>
+      <div class="wx"><div class="big" id="wxlo">—</div><div class="lbl">Today low · F</div></div>
+      <div class="wx"><div class="big" id="wxrain">—</div><div class="lbl">Rain chance</div></div>
+    </div>
+    <p class="wx-note" id="wxnote">Pulling the latest from the same data your phone's weather app uses. Your <b>July 2–5</b> trip-day forecast will appear here automatically once it's within ~10 days.</p>
+  </section>
+
+  <!-- DECISIONS -->
+  <section>
+    <h2>Read this first</h2>
+    <p class="h2sub">The few things that shape the trip</p>
+    <div class="alerts">
+      <div class="top">Decisions &amp; heads-ups</div>
+      <ol>
+        <li><span class="tag note">Order</span> &nbsp;Kept in <b>your sequence</b>. One forced exception: <b>Adel's Halal opens 6 PM</b> (and sits in Midtown), so it lands Saturday evening next to Din Tai Fung instead of midday.</li>
+        <li><span class="tag move">Your call</span> &nbsp;Your <b>10 PM Sat Din Tai Fung</b> overlaps the July 4 fireworks (~9:25 PM, near the Seaport). Plan keeps DTF as you set it — shift it earlier only if you'd rather catch the show.</li>
+        <li><span class="tag note">Hours</span> &nbsp;<b>NY Dosas</b> is 11 AM–3 PM, closed Sundays (your Friday slot is fine). <b>Russ &amp; Daughters</b> closes 4 PM (Sunday morning is fine).</li>
+        <li><span class="tag note">Diet</span> &nbsp;<b>Mei Lai Wah's</b> famous bun is roast pork — none of you. Optional sweet-bun stop only.</li>
+        <li><span class="tag note">Sun</span> &nbsp;Your three Sunday stops zig-zag across town before the <b>3 PM bus</b> — doable but rushed; Thai Diner is the easiest to drop. Late trains run past midnight — confirm in <b>TrainTime</b> and line up a Poughkeepsie pickup.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- DAYS render here -->
+  <div id="days"></div>
+
+  <!-- TRANSIT -->
+  <section>
+    <h2>Getting around</h2>
+    <p class="h2sub">Your daily commute is the biggest cost of time + money</p>
+    <div class="info">
+      <p><span class="k">Metro-North · Poughkeepsie ⇄ Grand Central</span>~1 h 30 to ~2 h, Zone 9. <b>~$20 off-peak / ~$26–29 peak</b> one-way; buy in TrainTime. Weekends all off-peak. Friday: ride in after 10 AM &amp; back after 8 PM to stay off-peak.</p>
+      <p><span class="k">Subway</span>Tap OMNY, $2.90/ride, free after 12 rides in a Mon–Sun week. Each person taps their own.</p>
+      <p><span class="k">Station ⇄ Vernon Terrace</span>~25 min walk or short rideshare; pickup for after-midnight returns.</p>
+    </div>
+  </section>
+
+  <!-- BUDGET -->
+  <section id="money">
+    <h2>Transit cost</h2>
+    <p class="h2sub">Per person · food on top</p>
+    <table class="budget">
+      <tr><td>Peter Pan bus (round trip)</td><td class="amt">already booked</td></tr>
+      <tr><td>Metro-North · 6 one-ways</td><td class="amt">~$120–150</td></tr>
+      <tr><td>Subway · OMNY (capped)</td><td class="amt">~$30–34</td></tr>
+      <tr><td>Transit total, per person</td><td class="amt">~$150–185</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    Built for Suda · Keer · Srav — July 2–5, 2026<br>
+    Tick places as you go · open <b>Menu</b> on any stop · tell the planner to change things.
+  </footer>
+</div>
+
+<!-- CHAT -->
+<div id="chat">
+  <div class="chatbox">
+    <div class="chatbar" id="chattoggle">
+      <span class="ai"></span><b>Trip Planner</b><span class="chev" id="chatchev">▲ tap to chat</span>
+    </div>
+    <div class="chatbody">
+      <div class="msgs" id="msgs">
+        <div class="msg b">Free mode — I change the plan from simple commands. Try “skip Magnolia”, “move Thai Diner to Sunday”, “mark Dosa Man done”, or “Saravanaa at 6 pm”.</div>
+      </div>
+      <div class="chips" id="chips">
+        <span class="chip">Move Thai Diner to Sunday</span>
+        <span class="chip">Skip Mei Lai Wah</span>
+        <span class="chip">Mark Golden Diner done</span>
+      </div>
+      <div class="inputrow">
+        <input id="cinput" placeholder="Tell the planner what to change…" autocomplete="off">
+        <button id="csend">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ITINERARY DATA  (the bot edits THIS, then the page re-renders)
+   ============================================================ */
+const DATA = [
+ {id:"Thursday", num:"DAY 01", dy:"Thursday", dt:"JUL 2 · arrival night",
+  note:"You land ~7:30 PM with one mission — Golden Diner at 9.",
+  stops:[
+   {type:"move",time:"7:10 PM",name:"Arrive Port Authority (PABT)",meta:"42nd St &amp; 8th Ave"},
+   {type:"move",time:"8:00 PM",name:"Subway → Lower East Side",getting:"~35–40 min down to the Madison St / East Broadway area."},
+   {type:"star",time:"9:00 PM",sub:"1¼h",name:"Golden Diner",price:"· reserved ✓",ll:"40.7138,-73.9906",meta:"123 Madison St · <span class='hrs'>closes 10 PM</span> · modern Asian-American diner",desc:"Famous honey-butter pancakes &amp; chicken-katsu sando. Menu leans egg-heavy, so Suda's picks are narrower.",
+    menu:[["Suda","Chili-crisp wedge salad w/ vegan bacon (confirm egg-free), grilled cheese, fries","$$"],["Keer","Chicken-katsu sando, Korean fried wings","$$"],["Srav","Same — chicken (skip beef patty melt)","$$"],["All","Split a dessert",""]]},
+   {type:"move",time:"10:15 PM",name:"Subway → Grand Central → train home",getting:"~25–30 min to GCT, then a late Hudson Line train. Check TrainTime + arrange the pickup."}
+  ]},
+
+ {id:"Friday", num:"DAY 02", dy:"Friday", dt:"JUL 3 · downtown crawl",
+  note:"Your order: Librae → Dosa Man → Magnolia → Saravanaa (with your L'Industrie pick slotted in the Village). Treat most as small shares.",
+  stops:[
+   {type:"move",time:"10:30 AM",name:"Train in → Astor Place",getting:"Arrive GCT after 10 AM to stay off-peak. Your note was a 46-min walk; the 6 train to Astor Pl is ~12 min."},
+   {type:"eat",time:"10:45 AM",sub:"35m",name:"Librae Bakery",ll:"40.7281,-73.9908",meta:"35 Cooper Sq · <span class='hrs'>7:30 AM–5 PM</span> · Middle-Eastern-inflected bakery",
+    menu:[["All","Pistachio-rose croissant (signature), loomi babka, feta-dill scone, focaccia; coffee/matcha","croissant ~$8–9"],["Suda","Ask which pastries are egg-free; skip the shakshuka",""]]},
+   {type:"eat",time:"11:30 AM",sub:"45m",name:"NY Dosas (Dosa Man)",price:"· 100% vegan",ll:"40.7305,-73.9989",meta:"50 Washington Sq S · <span class='hrs'>11 AM–3 PM, Mon–Sat</span> · cart in the park",getting:"~9–12 min walk from Librae.",desc:"A highlight, perfect for everyone — all vegan, all cheap. Eat on a park bench with the buskers.",
+    menu:[["All","Masala dosa, Pondicherry special, veg uttapam; extra sambar","~$8 ea · cash"]]},
+   {type:"eat",time:"12:45 PM",sub:"20m",name:"Magnolia Bakery",ll:"40.7359,-74.0049",meta:"401 Bleecker St · <span class='hrs'>till 11 PM</span> · West Village",getting:"~13 min from Dosa Man.",
+    menu:[["All","Banana pudding — egg-free, so Suda's good","~$6 sm / $9 lg"],["Suda","Skip the cupcakes (egg)",""]]},
+   {type:"eat",time:"1:15 PM",sub:"30m",name:"L'Industrie Pizzeria",price:"· your 'Jul 3 or 4' pick",ll:"40.7332,-74.0049",meta:"104 Christopher St · <span class='hrs'>12–10 PM</span> · West Village",getting:"~6 min from Magnolia — sits right between Magnolia and the walk to Curry Hill.",desc:"Some of the best slices in the city; line moves fast.",
+    menu:[["Suda","Burrata slice (the famous one), white / marinara","~$5–7"],["Keer","Cheese / veg — skip pepperoni, salami, bacon (pork)","~$5–7"],["Srav","Same — burrata / cheese","~$5–7"]]},
+   {type:"move",time:"2:30 PM",name:"Heat break + wander the Village",getting:"Coffee / AC, stroll the West Village, then 6 train up toward Curry Hill."},
+   {type:"eat",time:"4:00 PM",sub:"1h",name:"Saravanaa Bhavan",price:"· pure veg",ll:"40.7414,-73.9831",meta:"81 Lexington Ave (@ 26th) · <span class='hrs'>till 10:30 PM</span> · marks vegan/GF",getting:"Your ~37-min walk from the Village, or the 6 train to 28th St.",desc:"Your last Friday stop — a proper South-Indian sit-down.",
+    menu:[["All","Ghee-roast masala dosa, idli/medu vada, mini-tiffin, filter coffee","~$13–18"]]},
+   {type:"move",time:"6:30 PM",name:"Train home",getting:"6 train to Grand Central, then up to Poughkeepsie. Pickup at the station."}
+  ]},
+
+ {id:"Saturday", num:"DAY 03", dy:"Saturday", dt:"JUL 4 · Chinatown + Times Sq",
+  note:"Your Chinatown crawl in your order, ending with the 10 PM Din Tai Fung. (Adel's opens 6 PM, so it lands tonight next to DTF — see its note.)",
+  stops:[
+   {type:"move",time:"11:00 AM",name:"Train in → Chinatown",getting:"Weekend trains are off-peak. Subway down to Canal St."},
+   {type:"eat",time:"11:30 AM",sub:"30m",name:"Los Tacos No.1",ll:"40.7263,-73.9946",meta:"340 Lafayette St · <span class='hrs'>opens 11 AM</span> · NoHo edge · standing",
+    menu:[["Suda","Nopal (cactus) taco/quesadilla or cheese quesadilla — cactus isn't mushroom","~$5–6"],["Keer","Pollo (chicken) tacos — skip adobada (pork) &amp; carne asada (beef)","~$5–6"],["Srav","Same — chicken","~$5–6"]]},
+   {type:"eat",time:"12:30 PM",sub:"1h",name:"Dim Sum Palace",ll:"40.7140,-73.9961",meta:"27 Division St (Chinatown) · <span class='hrs'>10 AM–3 AM</span>",flag:"Lots of dim sum is pork — steer to shrimp/veg/duck; skip siu mai, char-siu &amp; 'juicy pork' buns.",
+    menu:[["Suda","Veg dumplings, plain/veg rice rolls (cheung fun), gai lan, sesame balls (no egg)","~$5–8"],["Keer","Har gow (shrimp), shrimp dumplings, duck spring rolls, gai lan","~$5–8"],["Srav","Same — shrimp/duck/veg","~$5–8"]]},
+   {type:"eat",time:"1:45 PM",sub:"10m",name:"Mei Lai Wah",price:"· optional",optional:true,ll:"40.7152,-73.9989",meta:"41 Mott St · <span class='hrs'>8:30 AM–8 PM</span>",flag:"Iconic bun is roast pork — none of you. Only a plain pineapple/coffee bun works (Suda: ask about egg), or skip."},
+   {type:"move",time:"2:30 PM",name:"Explore Chinatown / heat break",getting:"Wander Chinatown &amp; Little Italy, then later head up to Times Square for the evening."},
+   {type:"eat",time:"6:30 PM",sub:"30m",name:"Adel's Famous Halal",ll:"40.7607,-73.9826",meta:"1221 6th Ave (Midtown) · <span class='hrs'>opens 6 PM</span>",flag:"You listed this 2nd, but it opens at 6 PM and sits up in Midtown — so it works best tonight, ~5 min from Din Tai Fung.",
+    menu:[["Keer","Chicken / lamb over rice + white &amp; hot sauce","~$12–14"],["Srav","Same","~$12–14"],["Suda","Limited (meat-focused) — likely rice + salad; skip if full",""]]},
+   {type:"star",time:"10:00 PM",sub:"1½h",name:"Din Tai Fung",price:"· your 10 PM reservation",ll:"40.7620,-73.9840",meta:"1633 Broadway (Times Square) · <span class='hrs'>Sat till 12 AM</span> · ~22 min walk / 14 min metro to GCT",flag:"Pork xiao long bao won't work for any of you — order chicken &amp; veg dumplings. Note: the July 4 fireworks (~9:25 PM, near the Seaport) clash with this slot — keep DTF, or shift it earlier if you'd rather catch the show.",
+    menu:[["Suda","Veggie dumplings, cucumber salad, green beans/bok choy, veg fried rice, chocolate dumplings + mango shaved snow","$$"],["Keer","Chicken soup dumplings, chicken dumplings, shrimp fried rice, spicy chicken wontons","$$"],["Srav","Same — chicken &amp; shrimp","$$"]]},
+   {type:"move",time:"11:45 PM",name:"Times Sq → Grand Central → home",getting:"S shuttle or 7 (~10 min) to GCT, then the last train up. Confirm + pickup."}
+  ]},
+
+ {id:"Sunday", num:"DAY 04", dy:"Sunday", dt:"JUL 5 · last morning + 3 PM bus",
+  note:"Your order: Russ &amp; Daughters → Empanada Mama → Thai Diner. Heads-up — these three zig-zag across town before a 3 PM bus, so it's doable but rushed; trim one if it feels tight.",
+  stops:[
+   {type:"move",time:"8:30 AM",name:"Leave Poughkeepsie",getting:"Earlier train (~8:30) to land at GCT ~10:15 and fit all three stops before the 3 PM bus."},
+   {type:"eat",time:"10:45 AM",sub:"45m",name:"Russ &amp; Daughters",ll:"40.7226,-73.9883",meta:"179 E Houston St (LES) · <span class='hrs'>8 AM–4 PM</span> · order ahead online",desc:"A NYC 'appetizing' institution — mostly smoked fish; a Keer/Srav highlight, lighter for Suda.",
+    menu:[["Keer","Classic lox + everything bagel, pastrami-cured salmon","~$18–22"],["Srav","Lox / sturgeon board (fish all good)","~$18–22"],["Suda","Bagel + cream cheese / veg options","$"]]},
+   {type:"eat",time:"12:00 PM",sub:"45m",name:"Empanada Mama",ll:"40.7656,-73.9876",meta:"765 9th Ave (Hell's Kitchen) · <span class='hrs'>open 24 h</span> · ~10 min walk to PABT",getting:"~30 min up from Russ &amp; Daughters — the big jump of the morning.",
+    menu:[["Suda","Cheese / spinach-cheese / veggie (ask egg-free); plantains + guac","~$4–6 ea"],["Keer","Chicken / jerk — skip Cuban &amp; steak","~$4–6"],["Srav","Same — chicken/seafood","~$4–6"]]},
+   {type:"eat",time:"1:00 PM",sub:"30m",name:"Thai Diner",ll:"40.7207,-73.9957",meta:"186 Mott St (Nolita) · <span class='hrs'>opens 8 AM</span>",getting:"Back downtown (~25 min) — then a 20-min hop to PABT. Tight; this is the one to cut if you're racing the bus.",
+    menu:[["Suda","Veg/tofu pad thai or pad see ew — ask no fish sauce; roti; Thai iced tea","$$"],["Keer","Chicken/seafood curry, papaya salad, crab fried rice (skip pork 'moo')","$$"],["Srav","Same — chicken/seafood","$$"]]},
+   {type:"star",time:"2:30 PM",name:"Be at Port Authority with bags",meta:"42nd St &amp; 8th Ave · ~30 min buffer before boarding"},
+   {type:"move",time:"3:00 PM",name:"Bus → Baltimore"}
+  ]}
+];
+
+/* ---------- state ---------- */
+let done = new Set();
+try{ const s=localStorage.getItem('nyc_done'); if(s) done=new Set(JSON.parse(s)); }catch(e){}
+function persist(){ try{ localStorage.setItem('nyc_done', JSON.stringify([...done])); }catch(e){} }
+
+const slug = s => s.replace(/<[^>]*>/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const sid = (day,name) => day+"__"+slug(name);
+function tmin(t){ if(!t) return 0; const m=String(t).replace('~','').match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i); if(!m) return 0; let h=(+m[1])%12; if(/pm/i.test(m[3])) h+=12; return h*60+(+m[2]); }
+
+/* ---------- render ---------- */
+function dayRouteURL(stops){
+  const pts = stops.filter(s=>s.ll).map(s=>s.ll);
+  if(pts.length<1) return null;
+  if(pts.length===1) return {url:`https://www.google.com/maps/search/?api=1&query=${pts[0]}`, center:pts[0], n:1};
+  const origin=pts[0], dest=pts[pts.length-1];
+  const mid=pts.slice(1,-1).join('|');
+  let u=`https://www.google.com/maps/dir/?api=1&travelmode=walking&origin=${origin}&destination=${dest}`;
+  if(mid) u+=`&waypoints=${encodeURIComponent(mid)}`;
+  return {url:u, center:pts[0], n:pts.length};
+}
+function renderDays(){
+  const root = document.getElementById('days');
+  root.innerHTML = DATA.map(day=>{
+    const stops = day.stops; // keep your sequence — no time sort
+    const body = stops.map(s=>{
+      const id = sid(day.id, s.name);
+      const isDone = done.has(id);
+      const t = s.time.split(' ');
+      const menuBtn = (s.menu&&s.menu.length)?`<button class="menubtn" data-id="${id}">Menu ▾</button>`:'';
+      const menu = (s.menu&&s.menu.length)?`<div class="menu"><div class="mt">What to order</div><div class="orders">${
+        s.menu.map(([who,txt,price])=>`<div class="ord"><span class="tagp tp-${who.toLowerCase()}">${who}</span><span>${txt}${price?` <span class="price">${price}</span>`:''}</span></div>`).join('')
+      }</div></div>`:'';
+      return `<div class="stop ${s.type}"><div class="time">${t[0]}<small>${t[1]||''}${s.sub?' · '+s.sub:''}</small></div>
+        <div class="card ${s.optional?'optional ':''}${isDone?'done':''}" data-card="${id}">
+          <div class="cardhead">
+            <input type="checkbox" class="chk" data-id="${id}" ${isDone?'checked':''}>
+            <div class="name">${s.name}${s.price?` <span class="price">${s.price}</span>`:''}</div>
+            ${menuBtn}
+          </div>
+          ${s.meta?`<div class="meta">${s.meta}</div>`:''}
+          ${s.getting?`<div class="getting">${s.getting}</div>`:''}
+          ${s.desc?`<div class="desc">${s.desc}</div>`:''}
+          ${s.flag?`<div class="flag">${s.flag}</div>`:''}
+          ${menu}
+        </div></div>`;
+    }).join('');
+    const r = dayRouteURL(stops);
+    const map = r?`<div class="mapwrap">
+      <iframe class="daymap" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${r.center}&z=13&output=embed" title="${day.dy} map"></iframe>
+      <a class="routebtn" href="${r.url}" target="_blank" rel="noopener">🗺️ ${r.n>1?`Open ${day.dy}'s walking route in Google Maps (${r.n} stops)`:`Open ${day.dy}'s stop in Google Maps`} →</a>
+    </div>`:'';
+    return `<div class="day" id="${day.id.toLowerCase().slice(0,3)}">
+      <div class="dayhead"><span class="num">${day.num}</span><span class="dy">${day.dy}</span><span class="dt">${day.dt}</span></div>
+      <p class="daynote">${day.note}</p>${map}<div class="tl">${body}</div></div>`;
+  }).join('');
+  updateProgress();
+}
+function countable(){ let n=0; DATA.forEach(d=>d.stops.forEach(s=>{ if(s.type!=='move') n++; })); return n; }
+function updateProgress(){
+  const tot=countable();
+  let d=0; DATA.forEach(day=>day.stops.forEach(s=>{ if(s.type!=='move' && done.has(sid(day.id,s.name))) d++; }));
+  document.getElementById('pdone').textContent=d;
+  document.getElementById('ptot').textContent=tot;
+  document.getElementById('pbar').style.width=(tot?(d/tot*100):0)+'%';
+}
+
+/* ---------- interactions (event delegation) ---------- */
+document.getElementById('days').addEventListener('change',e=>{
+  if(e.target.classList.contains('chk')){
+    const id=e.target.dataset.id;
+    if(e.target.checked) done.add(id); else done.delete(id);
+    const card=e.target.closest('.card')||e.target.closest('.fw');
+    if(card) card.classList.toggle('done', e.target.checked);
+    persist(); updateProgress();
+  }
+});
+document.getElementById('days').addEventListener('click',e=>{
+  const b=e.target.closest('.menubtn'); if(!b) return;
+  const card=document.querySelector(`[data-card="${b.dataset.id}"]`);
+  if(card){ card.classList.toggle('menu-open'); b.textContent = card.classList.contains('menu-open')?'Menu ▲':'Menu ▾'; }
+});
+document.getElementById('resetbtn').addEventListener('click',()=>{ done.clear(); persist(); renderDays(); });
+
+/* ============================================================
+   LIVE WEATHER  (Open-Meteo — free, no API key, refreshes itself)
+   ============================================================ */
+const WMO={0:["☀️","Clear"],1:["🌤️","Mostly clear"],2:["⛅","Partly cloudy"],3:["☁️","Cloudy"],45:["🌫️","Fog"],48:["🌫️","Fog"],51:["🌦️","Drizzle"],53:["🌦️","Drizzle"],55:["🌦️","Drizzle"],61:["🌧️","Rain"],63:["🌧️","Rain"],65:["🌧️","Heavy rain"],71:["🌨️","Snow"],73:["🌨️","Snow"],75:["🌨️","Snow"],80:["🌦️","Showers"],81:["🌧️","Showers"],82:["⛈️","Heavy showers"],95:["⛈️","Thunderstorm"],96:["⛈️","Thunderstorm"],99:["⛈️","Thunderstorm"]};
+async function loadWeather(){
+  const st=document.getElementById('wxstatus'); st.textContent="updating…";
+  const url="https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.006&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=1";
+  try{
+    const r=await fetch(url); if(!r.ok) throw 0; const d=await r.json();
+    const code=d.current.weather_code, w=WMO[code]||["🌡️",""];
+    document.getElementById('wxnow').textContent=Math.round(d.current.temperature_2m)+"°";
+    document.getElementById('wxhi').textContent=Math.round(d.daily.temperature_2m_max[0])+"°";
+    document.getElementById('wxlo').textContent=Math.round(d.daily.temperature_2m_min[0])+"°";
+    document.getElementById('wxrain').textContent=(d.daily.precipitation_probability_max[0]??'—')+"%";
+    const now=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    st.textContent=w[0]+" "+w[1]+" · "+now;
+    document.getElementById('wxnote').innerHTML="Live as of "+now+", auto-refreshing every 10 min. Your <b>July 2–5</b> trip-day forecast lands here automatically once it's within ~10 days.";
+  }catch(e){
+    // Sandbox/CSP may block external fetch in this preview — degrades to typical July values.
+    document.getElementById('wxnow').textContent="~78°";
+    document.getElementById('wxhi').textContent="84°";
+    document.getElementById('wxlo').textContent="70°";
+    document.getElementById('wxrain').textContent="~30%";
+    st.textContent="typical July (live feed blocked here)";
+    document.getElementById('wxnote').innerHTML="The live feed is blocked inside this preview's sandbox, so these are typical early-July values. <b>Once you host this page on your own domain, the weather updates itself for real</b> — same code, no key needed.";
+  }
+}
+document.getElementById('wxrefresh').addEventListener('click',loadWeather);
+
+/* ============================================================
+   CHAT → edits the plan
+   ------------------------------------------------------------
+   HOSTING NOTE: in this Claude preview, fetch() to api.anthropic.com
+   works WITHOUT a key. To self-host, DO NOT put a key in this file —
+   send the message + plan to YOUR backend (e.g. POST /api/plan) which
+   calls Claude server-side with your key and returns the same JSON,
+   then change the fetch URL below to your endpoint.
+   ============================================================ */
+const chat=document.getElementById('chat');
+document.getElementById('chattoggle').addEventListener('click',()=>{
+  chat.classList.toggle('open');
+  document.getElementById('chatchev').textContent = chat.classList.contains('open')?'▼ close':'▲ tap to chat';
+});
+function addMsg(text,cls){ const m=document.createElement('div'); m.className='msg '+cls; m.innerHTML=text; const box=document.getElementById('msgs'); box.appendChild(m); box.scrollTop=box.scrollHeight; return m; }
+
+function findStop(name){ name=name.toLowerCase().replace(/<[^>]*>/g,''); for(const d of DATA){ for(const s of d.stops){ if(s.name.toLowerCase().replace(/<[^>]*>/g,'').includes(name)) return {d,s}; } } return null; }
+function applyActions(actions){
+  let changed=false;
+  (actions||[]).forEach(a=>{
+    const hit=a.stop?findStop(a.stop):null;
+    if(a.op==='check'&&hit){done.add(sid(hit.d.id,hit.s.name));changed=true;}
+    else if(a.op==='uncheck'&&hit){done.delete(sid(hit.d.id,hit.s.name));changed=true;}
+    else if(a.op==='remove'&&hit){hit.d.stops=hit.d.stops.filter(x=>x!==hit.s);changed=true;}
+    else if(a.op==='settime'&&hit&&a.time){hit.s.time=a.time;changed=true;}
+    else if(a.op==='move'&&hit){
+      hit.d.stops=hit.d.stops.filter(x=>x!==hit.s);
+      if(a.time) hit.s.time=a.time;
+      const tgt=DATA.find(d=>d.id.toLowerCase()===String(a.toDay||'').toLowerCase())||hit.d;
+      tgt.stops.push(hit.s); changed=true;
+    }
+  });
+  if(changed){ persist(); renderDays(); }
+  return changed;
+}
+/* ============================================================
+   PLANNER MODE
+   "local" = FREE. No account, no key, no network. A small parser
+             handles commands (skip / move / mark done / change time).
+   "api"   = full natural language via your backend function.
+             To use it for FREE: get a Gemini key (aistudio.google.com,
+             no credit card), deploy netlify/functions/plan.js, set the
+             GEMINI_API_KEY env var, then change the line below to "api".
+   ============================================================ */
+const PLANNER_MODE = "local";
+
+function esc(s){ return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function plain(n){ return n.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&'); }
+
+/* ---- free local command parser ---- */
+const STOP_TOKENS = new Set(["the","and","for","with","cafe","bakery","diner","palace","no","sun","day"]);
+function detectDay(m){
+  if(/\b(thursday|thurs|thu)\b/.test(m)) return "Thursday";
+  if(/\b(friday|fri)\b/.test(m)) return "Friday";
+  if(/\b(saturday|sat)\b/.test(m)) return "Saturday";
+  if(/\b(sunday|sun)\b/.test(m)) return "Sunday";
+  return null;
+}
+function detectTime(m){
+  if(/\bnoon\b/.test(m)) return "12:00 PM";
+  if(/\bmidnight\b/.test(m)) return "12:00 AM";
+  const t=m.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/);
+  if(t){ return (+t[1])+":"+(t[2]||"00")+" "+t[3].toUpperCase(); }
+  return null;
+}
+function matchStop(m){
+  let best=null,score=0;
+  DATA.forEach(d=>d.stops.forEach(s=>{
+    const toks=plain(s.name).toLowerCase().replace(/[()'.,]/g,' ').split(/\s+/).filter(t=>t.length>=3 && !STOP_TOKENS.has(t));
+    let sc=0; toks.forEach(t=>{ if(m.includes(t)) sc+=t.length; });
+    if(sc>score){ score=sc; best={d,s}; }
+  }));
+  return score>=3?best:null;
+}
+function parseCommand(msg){
+  const m=" "+msg.toLowerCase()+" ";
+  const hit=matchStop(m), day=detectDay(m), time=detectTime(m);
+  const has=re=>re.test(m);
+  if(has(/\b(skip|remove|drop|cancel|delete|get rid of|take out)\b/)){
+    if(!hit) return {reply:"Which place should I skip? e.g. “skip Mei Lai Wah”.",actions:[]};
+    return {reply:`Skipped ${plain(hit.s.name)}.`,actions:[{op:"remove",stop:hit.s.name}]};
+  }
+  const moveIntent = has(/\b(move|shift|put|reschedule|swap|change)\b/) || /\bto\s+(thursday|friday|saturday|sunday|thu|fri|sat|sun)\b/.test(m);
+  if(hit && day && moveIntent && !has(/\b(uncheck|undo)\b/)){
+    const a={op:"move",stop:hit.s.name,toDay:day}; if(time)a.time=time;
+    return {reply:`Moved ${plain(hit.s.name)} to ${day}${time?" at "+time:""}.`,actions:[a]};
+  }
+  if(hit && time && has(/\b(at|move|change|reschedule|set|to|make)\b/)){
+    return {reply:`Set ${plain(hit.s.name)} to ${time}.`,actions:[{op:"settime",stop:hit.s.name,time}]};
+  }
+  if(hit && has(/\b(uncheck|undo|unmark|un-mark|not done|haven't|havent)\b/)){
+    return {reply:`Unchecked ${plain(hit.s.name)}.`,actions:[{op:"uncheck",stop:hit.s.name}]};
+  }
+  if(has(/\b(done|did|finished|completed|visited|been|check|mark|tick|ate)\b/)){
+    if(!hit) return {reply:"Which place did you finish? e.g. “mark Dosa Man done”.",actions:[]};
+    return {reply:`Marked ${plain(hit.s.name)} done.`,actions:[{op:"check",stop:hit.s.name}]};
+  }
+  return {reply:"In free mode I handle changes — try “skip Mei Lai Wah”, “move Thai Diner to Sunday”, “mark Golden Diner done”, or “Dosa Man at 12:30 pm”. (For open questions, switch on free Gemini mode — see the code.)",actions:[]};
+}
+
+async function send(){
+  const inp=document.getElementById('cinput'); const btn=document.getElementById('csend');
+  const msg=inp.value.trim(); if(!msg) return;
+  inp.value=''; addMsg(esc(msg),'u'); btn.disabled=true;
+
+  if(PLANNER_MODE==="local"){
+    const {reply,actions}=parseCommand(msg);
+    applyActions(actions);
+    addMsg(esc(reply),'b');
+    btn.disabled=false; inp.focus(); return;
+  }
+
+  const thinking=addMsg('…','b sys');
+  const plan=DATA.map(d=>`${d.id}: `+d.stops.map(s=>`[${s.time}] ${plain(s.name)}${s.optional?' (optional)':''}${done.has(sid(d.id,s.name))?' (done)':''}`).join('; ')).join('\n');
+  const sys=`You edit a 4-day NYC food-trip itinerary (days are Thursday, Friday, Saturday, Sunday). Current plan:\n${plan}\n\nDiet: Suda = veg, no egg/mushroom/meat/fish. Keer = no beef/pork/mushroom. Srav = no beef/pork.\n\nReply ONLY with one compact JSON object, no markdown fences:\n{"reply":"<friendly confirmation, under 25 words>","actions":[ ... ]}\nValid actions: {"op":"check","stop":"<name>"}, {"op":"uncheck","stop":"<name>"}, {"op":"remove","stop":"<name>"}, {"op":"move","stop":"<name>","toDay":"<Thursday|Friday|Saturday|Sunday>","time":"<h:mm AM/PM optional>"}, {"op":"settime","stop":"<name>","time":"<h:mm AM/PM>"}.\nMatch stop by partial name. If the user only asks a question, answer it in "reply" with "actions":[]. Output nothing except the JSON.`;
+  try{
+    const res=await fetch("/.netlify/functions/plan",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({system:sys,message:msg})
+    });
+    const data=await res.json();
+    let txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim().replace(/```json/gi,'').replace(/```/g,'').trim();
+    const obj=JSON.parse(txt);
+    thinking.remove();
+    const did=applyActions(obj.actions);
+    addMsg(esc(obj.reply)||(did?'Done — updated the plan.':'Okay.'),'b');
+  }catch(e){
+    thinking.remove();
+    addMsg("Couldn't reach the planner. Check that the Gemini function is deployed and GEMINI_API_KEY is set — or stay on free local mode.",'b');
+  }
+  btn.disabled=false; inp.focus();
+}
+document.getElementById('csend').addEventListener('click',send);
+document.getElementById('cinput').addEventListener('keydown',e=>{ if(e.key==='Enter') send(); });
+document.getElementById('chips').addEventListener('click',e=>{ if(e.target.classList.contains('chip')){ document.getElementById('cinput').value=e.target.textContent; send(); } });
+
+/* ---------- go ---------- */
+renderDays();
+loadWeather();
+setInterval(loadWeather, 600000);
+</script>
+</body>
+</html>
