@@ -43,7 +43,7 @@
   .who{display:flex;align-items:flex-start;gap:8px;flex:1 1 200px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
   .dot{width:13px;height:13px;border-radius:50%;margin-top:4px;flex:none;}
   .who b{display:block;font-size:14px;}.who span{font-size:12.5px;color:var(--ink-2);line-height:1.35;}
-  .d-suda{background:var(--green);}.d-keer{background:var(--violet);}.d-srav{background:var(--amber);}
+  .d-Sudarshan{background:var(--green);}.d-Keerthana{background:var(--violet);}.d-Sravani{background:var(--amber);}
 
   h2{font-family:'Archivo',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;font-size:24px;margin:40px 0 4px;}
   .h2sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-2);margin:0 0 16px;letter-spacing:.04em;}
@@ -116,8 +116,8 @@
   .orders{display:flex;flex-direction:column;gap:6px;}
   .ord{display:flex;gap:9px;align-items:flex-start;font-size:13px;}
   .tagp{flex:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:.03em;margin-top:1px;min-width:46px;text-align:center;}
-  .tp-suda{background:var(--green-soft);color:var(--green);}.tp-keer{background:var(--violet-soft);color:var(--violet);}
-  .tp-srav{background:var(--amber-soft);color:var(--amber);}.tp-all{background:var(--ink);color:#fff;}
+  .tp-Sudarshan{background:var(--green-soft);color:var(--green);}.tp-Keerthana{background:var(--violet-soft);color:var(--violet);}
+  .tp-Sravani{background:var(--amber-soft);color:var(--amber);}.tp-all{background:var(--ink);color:#fff;}
   .price{font-family:'IBM Plex Mono',monospace;color:var(--ink-2);font-size:12px;font-weight:400;}
   .name .price{font-weight:400;}
 
@@ -189,9 +189,9 @@
     </div>
 
     <div class="crew">
-      <div class="who"><span class="dot d-suda"></span><div><b>Suda</b><span>Veg + vegan-friendly · no egg, mushroom, meat/fish</span></div></div>
-      <div class="who"><span class="dot d-keer"></span><div><b>Keer</b><span>Non-veg · no beef, pork, mushroom</span></div></div>
-      <div class="who"><span class="dot d-srav"></span><div><b>Srav</b><span>Non-veg · no beef, pork</span></div></div>
+      <div class="who"><span class="dot d-Sudarshanrshan"></span><div><b>Sudarshanrshan</b><span>Veg + vegan-friendly · no egg, mushroom, meat/fish</span></div></div>
+      <div class="who"><span class="dot d-Keerthana"></span><div><b>Keerthana</b><span>Non-veg · no beef, pork, mushroom</span></div></div>
+      <div class="who"><span class="dot d-Sravani"></span><div><b>Sravani</b><span>Non-veg · no beef, pork</span></div></div>
     </div>
   </header>
 
@@ -253,7 +253,7 @@
   </section>
 
   <footer>
-    Built for Suda · Keer · Srav — July 2–5, 2026<br>
+    Built for Sudarshanrshan · Keerthana · Sravani — July 2–5, 2026<br>
     Tick places as you go · open <b>Menu</b> on any stop · tell the planner to change things.
   </footer>
 </div>
@@ -291,8 +291,8 @@ const DATA = [
   stops:[
    {type:"move",time:"7:10 PM",name:"Arrive Port Authority (PABT)",meta:"42nd St &amp; 8th Ave"},
    {type:"move",time:"8:00 PM",name:"Subway → Lower East Side",getting:"~35–40 min down to the Madison St / East Broadway area."},
-   {type:"star",time:"9:00 PM",sub:"1¼h",name:"Golden Diner",price:"· reserved ✓",ll:"40.7138,-73.9906",meta:"123 Madison St · <span class='hrs'>closes 10 PM</span> · modern Asian-American diner",desc:"Famous honey-butter pancakes &amp; chicken-katsu sando. Menu leans egg-heavy, so Suda's picks are narrower.",
-    menu:[["Suda","Chili-crisp wedge salad w/ vegan bacon (confirm egg-free), grilled cheese, fries","$$"],["Keer","Chicken-katsu sando, Korean fried wings","$$"],["Srav","Same — chicken (skip beef patty melt)","$$"],["All","Split a dessert",""]]},
+   {type:"star",time:"9:00 PM",sub:"1¼h",name:"Golden Diner",price:"· reserved ✓",ll:"40.7138,-73.9906",meta:"123 Madison St · <span class='hrs'>closes 10 PM</span> · modern Asian-American diner",desc:"Famous honey-butter pancakes &amp; chicken-katsu sando. Menu leans egg-heavy, so Sudarshanrshan's picks are narrower.",
+    menu:[["Sudarshan","Chili-crisp wedge salad w/ vegan bacon (confirm egg-free), grilled cheese, fries","$$"],["Keerthana","Chicken-katsu sando, Korean fried wings","$$"],["Sravani","Same — chicken (skip beef patty melt)","$$"],["All","Split a dessert",""]]},
    {type:"move",time:"10:15 PM",name:"Subway → Grand Central → train home",getting:"~25–30 min to GCT, then a late Hudson Line train. Check TrainTime + arrange the pickup."}
   ]},
 
@@ -301,13 +301,13 @@ const DATA = [
   stops:[
    {type:"move",time:"10:30 AM",name:"Train in → Astor Place",getting:"Arrive GCT after 10 AM to stay off-peak. Your note was a 46-min walk; the 6 train to Astor Pl is ~12 min."},
    {type:"eat",time:"10:45 AM",sub:"35m",name:"Librae Bakery",ll:"40.7281,-73.9908",meta:"35 Cooper Sq · <span class='hrs'>7:30 AM–5 PM</span> · Middle-Eastern-inflected bakery",
-    menu:[["All","Pistachio-rose croissant (signature), loomi babka, feta-dill scone, focaccia; coffee/matcha","croissant ~$8–9"],["Suda","Ask which pastries are egg-free; skip the shakshuka",""]]},
+    menu:[["All","Pistachio-rose croissant (signature), loomi babka, feta-dill scone, focaccia; coffee/matcha","croissant ~$8–9"],["Sudarshan","Ask which pastries are egg-free; skip the shakshuka",""]]},
    {type:"eat",time:"11:30 AM",sub:"45m",name:"NY Dosas (Dosa Man)",price:"· 100% vegan",ll:"40.7305,-73.9989",meta:"50 Washington Sq S · <span class='hrs'>11 AM–3 PM, Mon–Sat</span> · cart in the park",getting:"~9–12 min walk from Librae.",desc:"A highlight, perfect for everyone — all vegan, all cheap. Eat on a park bench with the buskers.",
     menu:[["All","Masala dosa, Pondicherry special, veg uttapam; extra sambar","~$8 ea · cash"]]},
    {type:"eat",time:"12:45 PM",sub:"20m",name:"Magnolia Bakery",ll:"40.7359,-74.0049",meta:"401 Bleecker St · <span class='hrs'>till 11 PM</span> · West Village",getting:"~13 min from Dosa Man.",
-    menu:[["All","Banana pudding — egg-free, so Suda's good","~$6 sm / $9 lg"],["Suda","Skip the cupcakes (egg)",""]]},
+    menu:[["All","Banana pudding — egg-free, so Sudarshan's good","~$6 sm / $9 lg"],["Sudarshan","Skip the cupcakes (egg)",""]]},
    {type:"eat",time:"1:15 PM",sub:"30m",name:"L'Industrie Pizzeria",price:"· your 'Jul 3 or 4' pick",ll:"40.7332,-74.0049",meta:"104 Christopher St · <span class='hrs'>12–10 PM</span> · West Village",getting:"~6 min from Magnolia — sits right between Magnolia and the walk to Curry Hill.",desc:"Some of the best slices in the city; line moves fast.",
-    menu:[["Suda","Burrata slice (the famous one), white / marinara","~$5–7"],["Keer","Cheese / veg — skip pepperoni, salami, bacon (pork)","~$5–7"],["Srav","Same — burrata / cheese","~$5–7"]]},
+    menu:[["Sudarshan","Burrata slice (the famous one), white / marinara","~$5–7"],["Keerthana","Cheese / veg — skip pepperoni, salami, bacon (pork)","~$5–7"],["Sravani","Same — burrata / cheese","~$5–7"]]},
    {type:"move",time:"2:30 PM",name:"Heat break + wander the Village",getting:"Coffee / AC, stroll the West Village, then 6 train up toward Curry Hill."},
    {type:"eat",time:"4:00 PM",sub:"1h",name:"Saravanaa Bhavan",price:"· pure veg",ll:"40.7414,-73.9831",meta:"81 Lexington Ave (@ 26th) · <span class='hrs'>till 10:30 PM</span> · marks vegan/GF",getting:"Your ~37-min walk from the Village, or the 6 train to 28th St.",desc:"Your last Friday stop — a proper South-Indian sit-down.",
     menu:[["All","Ghee-roast masala dosa, idli/medu vada, mini-tiffin, filter coffee","~$13–18"]]},
@@ -319,15 +319,15 @@ const DATA = [
   stops:[
    {type:"move",time:"11:00 AM",name:"Train in → Chinatown",getting:"Weekend trains are off-peak. Subway down to Canal St."},
    {type:"eat",time:"11:30 AM",sub:"30m",name:"Los Tacos No.1",ll:"40.7263,-73.9946",meta:"340 Lafayette St · <span class='hrs'>opens 11 AM</span> · NoHo edge · standing",
-    menu:[["Suda","Nopal (cactus) taco/quesadilla or cheese quesadilla — cactus isn't mushroom","~$5–6"],["Keer","Pollo (chicken) tacos — skip adobada (pork) &amp; carne asada (beef)","~$5–6"],["Srav","Same — chicken","~$5–6"]]},
+    menu:[["Sudarshan","Nopal (cactus) taco/quesadilla or cheese quesadilla — cactus isn't mushroom","~$5–6"],["Keerthana","Pollo (chicken) tacos — skip adobada (pork) &amp; carne asada (beef)","~$5–6"],["Sravani","Same — chicken","~$5–6"]]},
    {type:"eat",time:"12:30 PM",sub:"1h",name:"Dim Sum Palace",ll:"40.7140,-73.9961",meta:"27 Division St (Chinatown) · <span class='hrs'>10 AM–3 AM</span>",flag:"Lots of dim sum is pork — steer to shrimp/veg/duck; skip siu mai, char-siu &amp; 'juicy pork' buns.",
-    menu:[["Suda","Veg dumplings, plain/veg rice rolls (cheung fun), gai lan, sesame balls (no egg)","~$5–8"],["Keer","Har gow (shrimp), shrimp dumplings, duck spring rolls, gai lan","~$5–8"],["Srav","Same — shrimp/duck/veg","~$5–8"]]},
-   {type:"eat",time:"1:45 PM",sub:"10m",name:"Mei Lai Wah",price:"· optional",optional:true,ll:"40.7152,-73.9989",meta:"41 Mott St · <span class='hrs'>8:30 AM–8 PM</span>",flag:"Iconic bun is roast pork — none of you. Only a plain pineapple/coffee bun works (Suda: ask about egg), or skip."},
+    menu:[["Sudarshan","Veg dumplings, plain/veg rice rolls (cheung fun), gai lan, sesame balls (no egg)","~$5–8"],["Keerthana","Har gow (shrimp), shrimp dumplings, duck spring rolls, gai lan","~$5–8"],["Sravani","Same — shrimp/duck/veg","~$5–8"]]},
+   {type:"eat",time:"1:45 PM",sub:"10m",name:"Mei Lai Wah",price:"· optional",optional:true,ll:"40.7152,-73.9989",meta:"41 Mott St · <span class='hrs'>8:30 AM–8 PM</span>",flag:"Iconic bun is roast pork — none of you. Only a plain pineapple/coffee bun works (Sudarshan: ask about egg), or skip."},
    {type:"move",time:"2:30 PM",name:"Explore Chinatown / heat break",getting:"Wander Chinatown &amp; Little Italy, then later head up to Times Square for the evening."},
    {type:"eat",time:"6:30 PM",sub:"30m",name:"Adel's Famous Halal",ll:"40.7607,-73.9826",meta:"1221 6th Ave (Midtown) · <span class='hrs'>opens 6 PM</span>",flag:"You listed this 2nd, but it opens at 6 PM and sits up in Midtown — so it works best tonight, ~5 min from Din Tai Fung.",
-    menu:[["Keer","Chicken / lamb over rice + white &amp; hot sauce","~$12–14"],["Srav","Same","~$12–14"],["Suda","Limited (meat-focused) — likely rice + salad; skip if full",""]]},
+    menu:[["Keerthana","Chicken / lamb over rice + white &amp; hot sauce","~$12–14"],["Sravani","Same","~$12–14"],["Sudarshan","Limited (meat-focused) — likely rice + salad; skip if full",""]]},
    {type:"star",time:"10:00 PM",sub:"1½h",name:"Din Tai Fung",price:"· your 10 PM reservation",ll:"40.7620,-73.9840",meta:"1633 Broadway (Times Square) · <span class='hrs'>Sat till 12 AM</span> · ~22 min walk / 14 min metro to GCT",flag:"Pork xiao long bao won't work for any of you — order chicken &amp; veg dumplings. Note: the July 4 fireworks (~9:25 PM, near the Seaport) clash with this slot — keep DTF, or shift it earlier if you'd rather catch the show.",
-    menu:[["Suda","Veggie dumplings, cucumber salad, green beans/bok choy, veg fried rice, chocolate dumplings + mango shaved snow","$$"],["Keer","Chicken soup dumplings, chicken dumplings, shrimp fried rice, spicy chicken wontons","$$"],["Srav","Same — chicken &amp; shrimp","$$"]]},
+    menu:[["Sudarshan","Veggie dumplings, cucumber salad, green beans/bok choy, veg fried rice, chocolate dumplings + mango shaved snow","$$"],["Keerthana","Chicken soup dumplings, chicken dumplings, shrimp fried rice, spicy chicken wontons","$$"],["Sravani","Same — chicken &amp; shrimp","$$"]]},
    {type:"move",time:"11:45 PM",name:"Times Sq → Grand Central → home",getting:"S shuttle or 7 (~10 min) to GCT, then the last train up. Confirm + pickup."}
   ]},
 
@@ -335,12 +335,12 @@ const DATA = [
   note:"Your order: Russ &amp; Daughters → Empanada Mama → Thai Diner. Heads-up — these three zig-zag across town before a 3 PM bus, so it's doable but rushed; trim one if it feels tight.",
   stops:[
    {type:"move",time:"8:30 AM",name:"Leave Poughkeepsie",getting:"Earlier train (~8:30) to land at GCT ~10:15 and fit all three stops before the 3 PM bus."},
-   {type:"eat",time:"10:45 AM",sub:"45m",name:"Russ &amp; Daughters",ll:"40.7226,-73.9883",meta:"179 E Houston St (LES) · <span class='hrs'>8 AM–4 PM</span> · order ahead online",desc:"A NYC 'appetizing' institution — mostly smoked fish; a Keer/Srav highlight, lighter for Suda.",
-    menu:[["Keer","Classic lox + everything bagel, pastrami-cured salmon","~$18–22"],["Srav","Lox / sturgeon board (fish all good)","~$18–22"],["Suda","Bagel + cream cheese / veg options","$"]]},
+   {type:"eat",time:"10:45 AM",sub:"45m",name:"Russ &amp; Daughters",ll:"40.7226,-73.9883",meta:"179 E Houston St (LES) · <span class='hrs'>8 AM–4 PM</span> · order ahead online",desc:"A NYC 'appetizing' institution — mostly smoked fish; a Keerthana/Sravani highlight, lighter for Sudarshan.",
+    menu:[["Keerthana","Classic lox + everything bagel, pastrami-cured salmon","~$18–22"],["Sravani","Lox / sturgeon board (fish all good)","~$18–22"],["Sudarshan","Bagel + cream cheese / veg options","$"]]},
    {type:"eat",time:"12:00 PM",sub:"45m",name:"Empanada Mama",ll:"40.7656,-73.9876",meta:"765 9th Ave (Hell's Kitchen) · <span class='hrs'>open 24 h</span> · ~10 min walk to PABT",getting:"~30 min up from Russ &amp; Daughters — the big jump of the morning.",
-    menu:[["Suda","Cheese / spinach-cheese / veggie (ask egg-free); plantains + guac","~$4–6 ea"],["Keer","Chicken / jerk — skip Cuban &amp; steak","~$4–6"],["Srav","Same — chicken/seafood","~$4–6"]]},
+    menu:[["Sudarshan","Cheese / spinach-cheese / veggie (ask egg-free); plantains + guac","~$4–6 ea"],["Keerthana","Chicken / jerk — skip Cuban &amp; steak","~$4–6"],["Sravani","Same — chicken/seafood","~$4–6"]]},
    {type:"eat",time:"1:00 PM",sub:"30m",name:"Thai Diner",ll:"40.7207,-73.9957",meta:"186 Mott St (Nolita) · <span class='hrs'>opens 8 AM</span>",getting:"Back downtown (~25 min) — then a 20-min hop to PABT. Tight; this is the one to cut if you're racing the bus.",
-    menu:[["Suda","Veg/tofu pad thai or pad see ew — ask no fish sauce; roti; Thai iced tea","$$"],["Keer","Chicken/seafood curry, papaya salad, crab fried rice (skip pork 'moo')","$$"],["Srav","Same — chicken/seafood","$$"]]},
+    menu:[["Sudarshan","Veg/tofu pad thai or pad see ew — ask no fish sauce; roti; Thai iced tea","$$"],["Keerthana","Chicken/seafood curry, papaya salad, crab fried rice (skip pork 'moo')","$$"],["Sravani","Same — chicken/seafood","$$"]]},
    {type:"star",time:"2:30 PM",name:"Be at Port Authority with bags",meta:"42nd St &amp; 8th Ave · ~30 min buffer before boarding"},
    {type:"move",time:"3:00 PM",name:"Bus → Baltimore"}
   ]}
@@ -572,7 +572,7 @@ async function send(){
 
   const thinking=addMsg('…','b sys');
   const plan=DATA.map(d=>`${d.id}: `+d.stops.map(s=>`[${s.time}] ${plain(s.name)}${s.optional?' (optional)':''}${done.has(sid(d.id,s.name))?' (done)':''}`).join('; ')).join('\n');
-  const sys=`You edit a 4-day NYC food-trip itinerary (days are Thursday, Friday, Saturday, Sunday). Current plan:\n${plan}\n\nDiet: Suda = veg, no egg/mushroom/meat/fish. Keer = no beef/pork/mushroom. Srav = no beef/pork.\n\nReply ONLY with one compact JSON object, no markdown fences:\n{"reply":"<friendly confirmation, under 25 words>","actions":[ ... ]}\nValid actions: {"op":"check","stop":"<name>"}, {"op":"uncheck","stop":"<name>"}, {"op":"remove","stop":"<name>"}, {"op":"move","stop":"<name>","toDay":"<Thursday|Friday|Saturday|Sunday>","time":"<h:mm AM/PM optional>"}, {"op":"settime","stop":"<name>","time":"<h:mm AM/PM>"}.\nMatch stop by partial name. If the user only asks a question, answer it in "reply" with "actions":[]. Output nothing except the JSON.`;
+  const sys=`You edit a 4-day NYC food-trip itinerary (days are Thursday, Friday, Saturday, Sunday). Current plan:\n${plan}\n\nDiet: Sudarshan = veg, no egg/mushroom/meat/fish. Keerthana = no beef/pork/mushroom. Sravani = no beef/pork.\n\nReply ONLY with one compact JSON object, no markdown fences:\n{"reply":"<friendly confirmation, under 25 words>","actions":[ ... ]}\nValid actions: {"op":"check","stop":"<name>"}, {"op":"uncheck","stop":"<name>"}, {"op":"remove","stop":"<name>"}, {"op":"move","stop":"<name>","toDay":"<Thursday|Friday|Saturday|Sunday>","time":"<h:mm AM/PM optional>"}, {"op":"settime","stop":"<name>","time":"<h:mm AM/PM>"}.\nMatch stop by partial name. If the user only asks a question, answer it in "reply" with "actions":[]. Output nothing except the JSON.`;
   try{
     const res=await fetch("/.netlify/functions/plan",{
       method:"POST",headers:{"Content-Type":"application/json"},
