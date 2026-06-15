@@ -112,7 +112,10 @@
   .desc{font-size:13.5px;margin:9px 0 0;}
   .flag{font-size:12.5px;color:var(--red);margin:9px 0 0;display:flex;gap:6px;}.flag::before{content:"⚠";flex:none;}
   .mapwrap{margin:12px 0 6px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--card);}
-  .daymap{width:100%;height:190px;border:0;display:block;}
+  .daymap{width:100%;height:200px;display:block;background:#e8eae6;}
+  .leaflet-container{font:inherit;}
+  .pin span{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--green);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);}
+  .pin span b{transform:rotate(45deg);}
   .routebtn{display:block;text-align:center;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#fff;background:var(--green);text-decoration:none;letter-spacing:.01em;}
   .routebtn:hover{background:#15633d;}
   .checklist{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:12px;}
@@ -184,6 +187,8 @@
   @media (prefers-reduced-motion:no-preference){.dayhead,.info,.alerts{animation:rise .5s ease both;}@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}}
   @media(max-width:480px){.tl{padding-left:64px;}.tl::before{left:50px;}.stop .time{left:-64px;width:50px;}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
 
@@ -435,6 +440,29 @@ function dayRouteURL(stops){
    1st person = green (p1), 2nd = violet (p2), 3rd = amber (p3), "All" = ink. */
 const WHO_COLORS=(()=>{const order=[],map={};DATA.forEach(d=>d.stops.forEach(s=>(s.menu||[]).forEach(([who])=>{if(/^all$/i.test(who)){map[who]='all';return;}if(!(who in map)){order.push(who);map[who]='p'+Math.min(order.length,5);}})));return map;})();
 function whoClass(who){ return WHO_COLORS[who] || (/^all$/i.test(who)?'all':'p1'); }
+
+/* ---- per-day Leaflet maps (free, no key): numbered stops + a connecting line ---- */
+let MAPS={};
+function initMaps(){
+  if(!window.L) return;
+  Object.values(MAPS).forEach(m=>{ try{ m.remove(); }catch(e){} }); MAPS={};
+  DATA.forEach(day=>{
+    const pts = day.stops.filter(s=>s.ll);
+    const el = document.getElementById('map-'+day.id);
+    if(!el || !pts.length) return;
+    const coords = pts.map(s=>s.ll.split(',').map(Number));
+    const map = L.map(el,{scrollWheelZoom:false, zoomControl:true});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+    if(coords.length>1) L.polyline(coords,{color:'#1C7A4C',weight:3,opacity:.65,dashArray:'4,7'}).addTo(map);
+    coords.forEach((c,i)=>{
+      L.marker(c,{icon:L.divIcon({className:'pin',html:'<span><b>'+(i+1)+'</b></span>',iconSize:[24,24],iconAnchor:[12,22]})})
+        .addTo(map).bindPopup((i+1)+'. '+pts[i].name.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&'));
+    });
+    if(coords.length>1) map.fitBounds(coords,{padding:[30,30]}); else map.setView(coords[0],15);
+    setTimeout(()=>map.invalidateSize(),120);
+    MAPS[day.id]=map;
+  });
+}
 function renderDays(){
   const root = document.getElementById('days');
   root.innerHTML = DATA.map(day=>{
@@ -463,7 +491,7 @@ function renderDays(){
     }).join('');
     const r = dayRouteURL(stops);
     const map = r?`<div class="mapwrap">
-      <iframe class="daymap" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${r.center}&z=13&output=embed" title="${day.dy} map"></iframe>
+      <div class="daymap" id="map-${day.id}"></div>
       <a class="routebtn" href="${r.url}" target="_blank" rel="noopener">🗺️ ${r.n>1?`Open ${day.dy}'s walking route in Google Maps (${r.n} stops)`:`Open ${day.dy}'s stop in Google Maps`} →</a>
     </div>`:'';
     return `<div class="day" id="${day.id.toLowerCase().slice(0,3)}">
@@ -471,6 +499,7 @@ function renderDays(){
       <p class="daynote">${day.note}</p>${map}<div class="tl">${body}</div></div>`;
   }).join('');
   updateProgress();
+  initMaps();
 }
 function countable(){ let n=0; DATA.forEach(d=>d.stops.forEach(s=>{ if(s.type!=='move') n++; })); return n; }
 function updateProgress(){
