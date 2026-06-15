@@ -38,12 +38,19 @@
   .progtop button{font-family:'IBM Plex Mono',monospace;font-size:11px;background:none;border:none;color:var(--green);cursor:pointer;text-decoration:underline;}
   .progbar{height:7px;background:var(--line);border-radius:6px;margin-top:9px;overflow:hidden;}
   .progbar i{display:block;height:100%;background:var(--green);width:0;transition:width .35s ease;}
+  .progmeta{display:flex;align-items:center;gap:12px;margin-left:auto;}
+  .syncbadge{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-2);}
+  .syncbadge i{width:8px;height:8px;border-radius:50%;background:var(--ink-2);flex:none;}
+  .syncbadge.sync-ok i{background:var(--green);}
+  .syncbadge.sync-off i{background:#C2C6C0;}
+  .syncbadge.sync-busy i{background:var(--amber);animation:pulse 1s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 
   .crew{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0;}
   .who{display:flex;align-items:flex-start;gap:8px;flex:1 1 200px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
   .dot{width:13px;height:13px;border-radius:50%;margin-top:4px;flex:none;}
   .who b{display:block;font-size:14px;}.who span{font-size:12.5px;color:var(--ink-2);line-height:1.35;}
-  .d-Sudarshan{background:var(--green);}.d-Keerthana{background:var(--violet);}.d-Sravani{background:var(--amber);}
+  .d-p1{background:var(--green);}.d-p2{background:var(--violet);}.d-p3{background:var(--amber);}
 
   h2{font-family:'Archivo',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;font-size:24px;margin:40px 0 4px;}
   .h2sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-2);margin:0 0 16px;letter-spacing:.04em;}
@@ -108,6 +115,18 @@
   .daymap{width:100%;height:190px;border:0;display:block;}
   .routebtn{display:block;text-align:center;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#fff;background:var(--green);text-decoration:none;letter-spacing:.01em;}
   .routebtn:hover{background:#15633d;}
+  .checklist{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+  .cl-head{display:flex;align-items:center;gap:10px;padding:13px 15px;background:var(--ink);color:#fff;}
+  .cl-head b{font-family:'Archivo';font-weight:800;text-transform:uppercase;letter-spacing:.01em;font-size:14px;display:block;}
+  .cl-head span{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9aa0a6;}
+  .cl-head .cl-count{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#46d39a;font-weight:600;white-space:nowrap;}
+  .cl-item{display:flex;gap:11px;align-items:flex-start;padding:10px 15px;border-bottom:1px solid var(--line);}
+  .cl-item:last-child{border-bottom:none;}
+  .cl-item label{font-size:14px;flex:1;cursor:pointer;line-height:1.4;}
+  .cl-item.done label{text-decoration:line-through;color:var(--ink-2);}
+  .cl-item .pchk{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:2px solid var(--line);border-radius:6px;flex:none;cursor:pointer;margin-top:1px;background:var(--card);position:relative;}
+  .cl-item .pchk:checked{background:var(--green);border-color:var(--green);}
+  .cl-item .pchk:checked::after{content:"✓";position:absolute;inset:0;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;}
 
   .menu{display:none;margin-top:11px;border-top:1px dashed var(--line);padding-top:11px;}
   .card.menu-open .menu{display:block;animation:drop .25s ease;}
@@ -116,9 +135,9 @@
   .orders{display:flex;flex-direction:column;gap:6px;}
   .ord{display:flex;gap:9px;align-items:flex-start;font-size:13px;}
   .tagp{flex:none;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:.03em;margin-top:1px;min-width:46px;text-align:center;}
-  .tp-Sudarshan{background:var(--green-soft);color:var(--green);}.tp-Keerthana{background:var(--violet-soft);color:var(--violet);}
-  .tp-Sravani{background:var(--amber-soft);color:var(--amber);}.tp-all{background:var(--ink);color:#fff;}
-  .price{font-family:'IBM Plex Mono',monospace;color:var(--ink-2);font-size:12px;font-weight:400;}
+  .tp-p1{background:var(--green-soft);color:var(--green);}.tp-p2{background:var(--violet-soft);color:var(--violet);}
+  .tp-p3{background:var(--amber-soft);color:var(--amber);}.tp-all{background:var(--ink);color:#fff;}
+  .price{font-family:'IBM Plex Mono',monospace;color:var(--ink-10);font-size:12px;font-weight:400;}
   .name .price{font-weight:400;}
 
   /* fireworks */
@@ -169,7 +188,7 @@
 <body>
 
 <nav>
-  <a href="#thu">Thu</a><a href="#fri">Fri</a><a href="#sat">Sat</a><a href="#sun">Sun</a><a href="#wx">Weather</a><a href="#money">$</a>
+  <a href="#thu">Thu</a><a href="#fri">Fri</a><a href="#sat">Sat</a><a href="#sun">Sun</a><a href="#pack">Pack</a><a href="#wx">Weather</a><a href="#money">$</a>
 </nav>
 
 <div class="wrap">
@@ -184,14 +203,14 @@
     </div>
 
     <div class="progwrap">
-      <div class="progtop"><span>Trip progress — <b><span id="pdone">0</span> / <span id="ptot">0</span></b> stops done</span><button id="resetbtn">reset</button></div>
+      <div class="progtop"><span>Trip progress — <b><span id="pdone">0</span> / <span id="ptot">0</span></b> stops done</span><span class="progmeta"><span id="syncbadge" class="syncbadge sync-busy"><i></i><span id="synctext">syncing…</span></span><button id="resetbtn">reset</button></span></div>
       <div class="progbar"><i id="pbar"></i></div>
     </div>
 
     <div class="crew">
-      <div class="who"><span class="dot d-Sudarshan"></span><div><b>Sudarshan</b><span>Veg + vegan-friendly · no egg, mushroom, meat/fish</span></div></div>
-      <div class="who"><span class="dot d-Keerthana"></span><div><b>Keerthana</b><span>Non-veg · no beef, pork, mushroom</span></div></div>
-      <div class="who"><span class="dot d-Sravani"></span><div><b>Sravani</b><span>Non-veg · no beef, pork</span></div></div>
+      <div class="who"><span class="dot d-p1"></span><div><b>Sudarshan</b><span>Veg + vegan-friendly · no egg, mushroom, meat/fish</span></div></div>
+      <div class="who"><span class="dot d-p2"></span><div><b>Keerthana</b><span>Non-veg · no beef, pork, mushroom</span></div></div>
+      <div class="who"><span class="dot d-p3"></span><div><b>Sravani</b><span>Non-veg · no beef, pork</span></div></div>
     </div>
   </header>
 
@@ -238,6 +257,13 @@
       <p><span class="k">Subway</span>Tap OMNY, $2.90/ride, free after 12 rides in a Mon–Sun week. Each person taps their own.</p>
       <p><span class="k">Station ⇄ Vernon Terrace</span>~25 min walk or short rideshare; pickup for after-midnight returns.</p>
     </div>
+  </section>
+
+  <!-- PACKING -->
+  <section id="pack">
+    <h2>Pack &amp; day bag</h2>
+    <p class="h2sub">Tick as you go — saves on your phone. Built for heat, walking &amp; daily commuting.</p>
+    <div id="packlist"></div>
   </section>
 
   <!-- BUDGET -->
@@ -347,9 +373,47 @@ const DATA = [
 ];
 
 /* ---------- state ---------- */
+/* Itinerary (ticks + plan edits) is SHARED across devices via Netlify Blobs.
+   The packing list stays LOCAL to each phone (handled separately below). */
+const DEFAULT_DATA = JSON.parse(JSON.stringify(DATA));
+let stateTs = 0, saveTimer = null;
 let done = new Set();
-try{ const s=localStorage.getItem('nyc_done'); if(s) done=new Set(JSON.parse(s)); }catch(e){}
-function persist(){ try{ localStorage.setItem('nyc_done', JSON.stringify([...done])); }catch(e){} }
+try{ const s=localStorage.getItem('nyc_done'); if(s) done=new Set(JSON.parse(s)); }catch(e){}   // offline cache
+function persist(){ try{ localStorage.setItem('nyc_done', JSON.stringify([...done])); }catch(e){} scheduleSave(); }
+
+function setSync(state){           // 'busy' | 'ok' | 'off'
+  const b=document.getElementById('syncbadge'), t=document.getElementById('synctext');
+  if(!b||!t) return;
+  b.className='syncbadge sync-'+state;
+  t.textContent = state==='ok' ? 'synced ✓' : state==='off' ? 'offline · local only' : 'syncing…';
+}
+
+function scheduleSave(){
+  stateTs = Date.now();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    setSync('busy');
+    fetch('/.netlify/functions/state',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({plan:DATA, done:[...done], ts:stateTs})})
+      .then(r=>setSync(r.ok?'ok':'off'))
+      .catch(()=>setSync('off'));
+  }, 400);
+}
+async function loadShared(){
+  try{
+    const r = await fetch('/.netlify/functions/state',{cache:'no-store'});
+    if(!r.ok){ setSync('off'); return; }
+    const s = await r.json();
+    if(s && typeof s.ts==='number' && s.ts > stateTs){   // only adopt strictly-newer remote state
+      if(Array.isArray(s.plan) && s.plan.length){ DATA.length=0; s.plan.forEach(d=>DATA.push(d)); }
+      if(Array.isArray(s.done)) done = new Set(s.done);
+      stateTs = s.ts;
+      try{ localStorage.setItem('nyc_done', JSON.stringify([...done])); }catch(e){}
+      renderDays();
+    }
+    setSync('ok');
+  }catch(e){ setSync('off'); /* offline → keep the local copy */ }
+}
 
 const slug = s => s.replace(/<[^>]*>/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const sid = (day,name) => day+"__"+slug(name);
@@ -366,6 +430,11 @@ function dayRouteURL(stops){
   if(mid) u+=`&waypoints=${encodeURIComponent(mid)}`;
   return {url:u, center:pts[0], n:pts.length};
 }
+/* Colors are assigned by ORDER of first appearance, not by name —
+   so you can rename people freely and the backgrounds keep working.
+   1st person = green (p1), 2nd = violet (p2), 3rd = amber (p3), "All" = ink. */
+const WHO_COLORS=(()=>{const order=[],map={};DATA.forEach(d=>d.stops.forEach(s=>(s.menu||[]).forEach(([who])=>{if(/^all$/i.test(who)){map[who]='all';return;}if(!(who in map)){order.push(who);map[who]='p'+Math.min(order.length,5);}})));return map;})();
+function whoClass(who){ return WHO_COLORS[who] || (/^all$/i.test(who)?'all':'p1'); }
 function renderDays(){
   const root = document.getElementById('days');
   root.innerHTML = DATA.map(day=>{
@@ -376,7 +445,7 @@ function renderDays(){
       const t = s.time.split(' ');
       const menuBtn = (s.menu&&s.menu.length)?`<button class="menubtn" data-id="${id}">Menu ▾</button>`:'';
       const menu = (s.menu&&s.menu.length)?`<div class="menu"><div class="mt">What to order</div><div class="orders">${
-        s.menu.map(([who,txt,price])=>`<div class="ord"><span class="tagp tp-${who.toLowerCase()}">${who}</span><span>${txt}${price?` <span class="price">${price}</span>`:''}</span></div>`).join('')
+        s.menu.map(([who,txt,price])=>`<div class="ord"><span class="tagp tp-${whoClass(who)}">${who}</span><span>${txt}${price?` <span class="price">${price}</span>`:''}</span></div>`).join('')
       }</div></div>`:'';
       return `<div class="stop ${s.type}"><div class="time">${t[0]}<small>${t[1]||''}${s.sub?' · '+s.sub:''}</small></div>
         <div class="card ${s.optional?'optional ':''}${isDone?'done':''}" data-card="${id}">
@@ -478,6 +547,7 @@ function findStop(name){ name=name.toLowerCase().replace(/<[^>]*>/g,''); for(con
 function applyActions(actions){
   let changed=false;
   (actions||[]).forEach(a=>{
+    if(a.op==='resetplan'){ DATA.length=0; DEFAULT_DATA.forEach(d=>DATA.push(JSON.parse(JSON.stringify(d)))); changed=true; return; }
     const hit=a.stop?findStop(a.stop):null;
     if(a.op==='check'&&hit){done.add(sid(hit.d.id,hit.s.name));changed=true;}
     else if(a.op==='uncheck'&&hit){done.delete(sid(hit.d.id,hit.s.name));changed=true;}
@@ -563,6 +633,12 @@ async function send(){
   const msg=inp.value.trim(); if(!msg) return;
   inp.value=''; addMsg(esc(msg),'u'); btn.disabled=true;
 
+  if(/\breset( the)? plan\b|\bstart over\b|\brestore( the)? (original|default) plan\b/i.test(msg)){
+    applyActions([{op:'resetplan'}]);
+    addMsg('Reset the plan to the original (everyone\u2019s ticks are kept).','b');
+    btn.disabled=false; inp.focus(); return;
+  }
+
   if(PLANNER_MODE==="local"){
     const {reply,actions}=parseCommand(msg);
     applyActions(actions);
@@ -594,8 +670,71 @@ document.getElementById('csend').addEventListener('click',send);
 document.getElementById('cinput').addEventListener('keydown',e=>{ if(e.key==='Enter') send(); });
 document.getElementById('chips').addEventListener('click',e=>{ if(e.target.classList.contains('chip')){ document.getElementById('cinput').value=e.target.textContent; send(); } });
 
+/* ---------- packing checklist ---------- */
+const PACK=[
+ {title:"Pack for the trip", sub:"Lives in your bag at the friend's place", items:[
+   "Peter Pan ticket + photo ID",
+   "Phone + charger &amp; cable",
+   "Power bank (+ its cable)",
+   "Broken-in walking shoes — the #1 item",
+   "Light, breathable clothes for 3–4 hot days",
+   "Sleepwear + one light layer for AC / late trains",
+   "Toiletries, deodorant, toothbrush",
+   "Any medications",
+   "Sunscreen SPF 30+",
+   "Sunglasses + cap or hat",
+   "Packable rain jacket or compact umbrella",
+   "Refillable water bottle",
+   "Cash + cards (some spots are cash-only)",
+   "Hand sanitizer + wet wipes",
+   "Blister plasters / band-aids",
+   "Spare bag for dirty laundry",
+   "A small thank-you gift for your Poughkeepsie host"
+ ]},
+ {title:"Day bag — carry while roaming", sub:"Goes with you into the city each day", items:[
+   "Phone (this itinerary + Google Maps offline + TrainTime)",
+   "Power bank + cable (maps &amp; photos drain it fast)",
+   "Refillable water bottle — refill often, it's hot",
+   "Sunscreen to reapply + sunglasses + cap",
+   "Compact umbrella / poncho (afternoon storms)",
+   "Cash (Dosa Man cart is cash-friendly) + OMNY (phone/contactless card)",
+   "Metro-North ticket in the TrainTime app",
+   "Photo ID",
+   "Wet wipes / napkins / hand sanitizer (food crawl)",
+   "A light layer for AC and the late train home",
+   "Small foldable tote (Chinatown snacks / leftovers)",
+   "Blister plasters",
+   "Headphones",
+   "Optional: handheld fan or cooling towel for the humidity"
+ ]}
+];
+let packDone=new Set();
+try{ const s=localStorage.getItem('nyc_pack'); if(s) packDone=new Set(JSON.parse(s)); }catch(e){}
+function persistPack(){ try{ localStorage.setItem('nyc_pack', JSON.stringify([...packDone])); }catch(e){} }
+const pid=(g,it)=>'pack__'+g+'__'+slug(it);
+function renderPack(){
+  const root=document.getElementById('packlist');
+  root.innerHTML=PACK.map((g,gi)=>{
+    const doneN=g.items.filter(it=>packDone.has(pid(gi,it))).length;
+    const items=g.items.map(it=>{ const id=pid(gi,it); const d=packDone.has(id);
+      return `<div class="cl-item ${d?'done':''}"><input type="checkbox" class="pchk" id="${id}" data-id="${id}" ${d?'checked':''}><label for="${id}">${it}</label></div>`;
+    }).join('');
+    return `<div class="checklist"><div class="cl-head"><div><b>${g.title}</b><span>${g.sub}</span></div><span class="cl-count">${doneN}/${g.items.length}</span></div>${items}</div>`;
+  }).join('');
+}
+document.getElementById('packlist').addEventListener('change',e=>{
+  if(!e.target.classList.contains('pchk')) return;
+  const id=e.target.dataset.id;
+  if(e.target.checked) packDone.add(id); else packDone.delete(id);
+  persistPack(); renderPack();
+});
+
 /* ---------- go ---------- */
 renderDays();
+renderPack();
+loadShared();                                   // pull shared itinerary on open
+setInterval(loadShared, 15000);                 // keep in sync with the others every 15s
+window.addEventListener('focus', loadShared);   // and whenever you return to the tab
 loadWeather();
 setInterval(loadWeather, 600000);
 </script>
