@@ -502,7 +502,7 @@ function applyActions(actions){
              no credit card), deploy netlify/functions/plan.js, set the
              GEMINI_API_KEY env var, then change the line below to "api".
    ============================================================ */
-const PLANNER_MODE = "local";
+const PLANNER_MODE = "api";
 
 function esc(s){ return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
 function plain(n){ return n.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&'); }
