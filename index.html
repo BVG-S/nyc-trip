@@ -162,14 +162,24 @@
   footer{margin-top:44px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-2);line-height:1.7;}
 
   /* chat */
-  #chat{position:fixed;left:0;right:0;bottom:0;z-index:80;display:flex;justify-content:center;pointer-events:none;}
-  .chatbox{pointer-events:auto;width:100%;max-width:720px;margin:0 14px;background:var(--card);border:1px solid var(--line);border-bottom:none;border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.14);overflow:hidden;}
-  .chatbar{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--ink);color:#fff;}
-  .chatbar .ai{width:9px;height:9px;border-radius:50%;background:#46d39a;box-shadow:0 0 0 4px rgba(70,211,154,.2);}
-  .chatbar b{font-family:'Archivo';font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:14px;flex:1;}
-  .chatbar .chev{font-family:'IBM Plex Mono';font-size:13px;color:#9aa0a6;}
-  .chatbody{display:none;flex-direction:column;max-height:62vh;}
-  #chat.open .chatbody{display:flex;}
+  /* chat: floating trio circle that expands into a panel */
+  #chat{position:fixed;right:16px;bottom:16px;z-index:80;}
+  .chatfab{width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;background:var(--ink);box-shadow:0 6px 20px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;padding:0;transition:transform .2s ease, box-shadow .2s ease;}
+  .chatfab:hover{transform:scale(1.06);box-shadow:0 8px 26px rgba(0,0,0,.34);}
+  #chat.open .chatfab{display:none;}
+  .triodots{position:relative;width:28px;height:24px;display:block;}
+  .triodots i{position:absolute;width:11px;height:11px;border-radius:50%;}
+  .triodots i:nth-child(1){left:8px;top:0;background:var(--green);}
+  .triodots i:nth-child(2){left:0;bottom:0;background:var(--violet);}
+  .triodots i:nth-child(3){right:0;bottom:0;background:var(--amber);}
+  .chatfab .triodots i,.chathead .triodots i{box-shadow:0 0 0 1.5px rgba(255,255,255,.3);}
+  .chatpanel{display:none;position:fixed;right:16px;bottom:16px;width:min(380px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.22);overflow:hidden;flex-direction:column;max-height:min(70vh,560px);}
+  #chat.open .chatpanel{display:flex;}
+  .chathead{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--ink);color:#fff;}
+  .chathead .triodots{flex:none;}
+  .chathead b{font-family:'Archivo';font-weight:800;text-transform:uppercase;letter-spacing:.02em;font-size:14px;flex:1;}
+  .chatclose{background:none;border:none;color:#9aa0a6;font-size:17px;cursor:pointer;line-height:1;padding:2px 4px;}
+  .chatclose:hover{color:#fff;}
   .msgs{padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;}
   .msg{font-size:13.5px;padding:9px 12px;border-radius:12px;max-width:85%;line-height:1.45;}
   .msg.u{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:4px;}
@@ -184,7 +194,19 @@
   .inputrow button{border:none;background:var(--green);color:#fff;border-radius:11px;padding:0 16px;font-weight:600;font-size:14px;cursor:pointer;font-family:'Inter';}
   .inputrow button:disabled{opacity:.5;cursor:default;}
 
-  @media (prefers-reduced-motion:no-preference){.dayhead,.info,.alerts{animation:rise .5s ease both;}@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}}
+  .reveal{opacity:1;}
+  @media (prefers-reduced-motion:no-preference){
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease, transform .55s ease;}
+    .reveal.in{opacity:1;transform:none;}
+    #chat.open .chatpanel{animation:popin .22s ease both;}
+    @keyframes popin{from{opacity:0;transform:translateY(12px) scale(.96);}to{opacity:1;transform:none;}}
+    .msg{animation:msgin .25s ease both;}
+    @keyframes msgin{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+    .chatfab .triodots{animation:bob 2.8s ease-in-out infinite;}
+    @keyframes bob{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-2px) rotate(-4deg);}}
+    .chk:checked,.cl-item .pchk:checked{animation:pop .28s ease;}
+    @keyframes pop{0%{transform:scale(1);}45%{transform:scale(1.28);}100%{transform:scale(1);}}
+  }
   @media(max-width:480px){.tl{padding-left:64px;}.tl::before{left:50px;}.stop .time{left:-64px;width:50px;}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -200,10 +222,10 @@
 
   <header class="hero">
     <p class="eyebrow">Halethorpe → New York City · Independence Day</p>
-    <h1>Three Friends,<br>One Food Map,<br>July <span class="yr">2–5</span></h1>
+    <h1>Trio<br>Food Crawl<br>July <span class="yr">2–5</span></h1>
     <p class="subline">BASE&nbsp;: Vernon Terrace, Poughkeepsie · MOVE&nbsp;: Metro-North, daily · RULE&nbsp;: walk &amp; transit only</p>
     <div class="route-strip">
-      <span class="pill">BUS IN · THU 7:10 PM · PABT</span>
+      <span class="pill">BUS IN · THU 7:30 PM · PABT</span>
       <span class="pill out">BUS OUT · SUN 3:00 PM · PABT</span>
     </div>
 
@@ -214,15 +236,15 @@
 
     <div class="crew">
       <div class="who"><span class="dot d-p1"></span><div><b>Sudarshan</b><span>Veg + vegan-friendly · no egg, mushroom, meat/fish</span></div></div>
-      <div class="who"><span class="dot d-p2"></span><div><b>Keerthana</b><span>Non-veg · no beef, pork, mushroom</span></div></div>
-      <div class="who"><span class="dot d-p3"></span><div><b>Sravani</b><span>Non-veg · no beef, pork</span></div></div>
+      <div class="who"><span class="dot d-p2"></span><div><b>Keerthana</b><span>Non-veg · chicken &amp; shrimp only · no mushrooms</span></div></div>
+      <div class="who"><span class="dot d-p3"></span><div><b>Sravani</b><span>Non-veg · chicken &amp; shrimp only</span></div></div>
     </div>
   </header>
 
   <!-- LIVE WEATHER -->
-  <section id="wx">
+  <section id="wx" class="reveal">
     <div class="wx-head">
-      <div><h2 style="margin-bottom:0;">Weather</h2><p class="h2sub" style="margin-bottom:0;">Live NYC feed — refreshes on its own</p></div>
+      <div><h2 style="margin-bottom:0;">Weather</h2><p class="h2sub" style="margin-bottom:0;">Live NYC feed</p></div>
       <div class="wx-status"><span id="wxstatus">loading…</span><button id="wxrefresh">refresh</button></div>
     </div>
     <div class="weather" id="wxcards">
@@ -235,17 +257,17 @@
   </section>
 
   <!-- DECISIONS -->
-  <section>
+  <section class="reveal">
     <h2>Read this first</h2>
     <p class="h2sub">The few things that shape the trip</p>
     <div class="alerts">
       <div class="top">Decisions &amp; heads-ups</div>
       <ol>
-        <li><span class="tag note">Order</span> &nbsp;Kept in <b>your sequence</b>. One forced exception: <b>Adel's Halal opens 6 PM</b> (and sits in Midtown), so it lands Saturday evening next to Din Tai Fung instead of midday.</li>
-        <li><span class="tag move">Your call</span> &nbsp;Your <b>10 PM Sat Din Tai Fung</b> overlaps the July 4 fireworks (~9:25 PM, near the Seaport). Plan keeps DTF as you set it — shift it earlier only if you'd rather catch the show.</li>
-        <li><span class="tag note">Hours</span> &nbsp;<b>NY Dosas</b> is 11 AM–3 PM, closed Sundays (your Friday slot is fine). <b>Russ &amp; Daughters</b> closes 4 PM (Sunday morning is fine).</li>
-        <li><span class="tag note">Diet</span> &nbsp;<b>Mei Lai Wah's</b> famous bun is roast pork — none of you. Optional sweet-bun stop only.</li>
-        <li><span class="tag note">Sun</span> &nbsp;Your three Sunday stops zig-zag across town before the <b>3 PM bus</b> — doable but rushed; Thai Diner is the easiest to drop. Late trains run past midnight — confirm in <b>TrainTime</b> and line up a Poughkeepsie pickup.</li>
+        <li><span class="tag note">Hours</span> &nbsp;<b>NY Dosas</b> closes <b>3 PM</b> Friday — eat before it shuts (don't lose track in the park).</li>
+        <li><span class="tag note">Good</span> &nbsp;The <b>L'Industrie</b> you want is the new <b>Little Italy</b> spot (197 Grand St) — ~6 min from Chinatown and open 11 AM Sat.</li>
+        <li><span class="tag move">Your call</span> &nbsp;Your <b>10 PM Sat Din Tai Fung</b> overlaps the July 4 fireworks (~9:25 PM, near the Seaport).</li>
+        <li><span class="tag note">Trains</span> &nbsp;Late ones home: <b>Thu 11:52 PM</b>, <b>Sat 12:48 AM</b> (the last). Confirm in <b>TrainTime</b> and line up a Poughkeepsie pickup.</li>
+        <li><span class="tag note">Sun</span> &nbsp;One meal (K-Bap, 11:30) then <b>PABT by 2:30</b> for the bus to Baltimore — easy morning.</li>
       </ol>
     </div>
   </section>
@@ -254,7 +276,7 @@
   <div id="days"></div>
 
   <!-- TRANSIT -->
-  <section>
+  <section class="reveal">
     <h2>Getting around</h2>
     <p class="h2sub">Your daily commute is the biggest cost of time + money</p>
     <div class="info">
@@ -265,14 +287,14 @@
   </section>
 
   <!-- PACKING -->
-  <section id="pack">
+  <section id="pack" class="reveal">
     <h2>Pack &amp; day bag</h2>
     <p class="h2sub">Tick as you go — saves on your phone. Built for heat, walking &amp; daily commuting.</p>
     <div id="packlist"></div>
   </section>
 
   <!-- BUDGET -->
-  <section id="money">
+  <section id="money" class="reveal">
     <h2>Transit cost</h2>
     <p class="h2sub">Per person · food on top</p>
     <table class="budget">
@@ -291,25 +313,27 @@
 
 <!-- CHAT -->
 <div id="chat">
-  <div class="chatbox">
-    <div class="chatbar" id="chattoggle">
-      <span class="ai"></span><b>Trip Planner</b><span class="chev" id="chatchev">▲ tap to chat</span>
+  <div class="chatpanel">
+    <div class="chathead">
+      <span class="triodots"><i></i><i></i><i></i></span><b>Trip Planner</b>
+      <button class="chatclose" id="chatclose" aria-label="Close">✕</button>
     </div>
-    <div class="chatbody">
-      <div class="msgs" id="msgs">
-        <div class="msg b">Free mode — I change the plan from simple commands. Try “skip Magnolia”, “move Thai Diner to Sunday”, “mark Dosa Man done”, or “Saravanaa at 6 pm”.</div>
-      </div>
-      <div class="chips" id="chips">
-        <span class="chip">Move Thai Diner to Sunday</span>
-        <span class="chip">Skip Mei Lai Wah</span>
-        <span class="chip">Mark Golden Diner done</span>
-      </div>
-      <div class="inputrow">
-        <input id="cinput" placeholder="Tell the planner what to change…" autocomplete="off">
-        <button id="csend">Send</button>
-      </div>
+    <div class="msgs" id="msgs">
+      <div class="msg b">Free mode — I change the plan from simple commands. Try “skip L'Industrie”, “move Grace Street to Saturday”, “mark Golden Diner done”, or “K-Bap at 12 pm”.</div>
+    </div>
+    <div class="chips" id="chips">
+      <span class="chip">Skip L'Industrie</span>
+      <span class="chip">Mark Golden Diner done</span>
+      <span class="chip">Reset plan</span>
+    </div>
+    <div class="inputrow">
+      <input id="cinput" placeholder="Tell the planner what to change…" autocomplete="off">
+      <button id="csend">Send</button>
     </div>
   </div>
+  <button class="chatfab" id="chattoggle" aria-label="Open trip planner">
+    <span class="triodots"><i></i><i></i><i></i></span>
+  </button>
 </div>
 
 <script>
@@ -317,62 +341,61 @@
    ITINERARY DATA  (the bot edits THIS, then the page re-renders)
    ============================================================ */
 const DATA = [
- {id:"Thursday", num:"DAY 01", dy:"Thursday", dt:"JUL 2 · arrival night",
-  note:"You land ~7:30 PM with one mission — Golden Diner at 9.",
+ {id:"Thursday", num:"DAY 01", dy:"Thursday", dt:"JUL 2 · bus in + Golden Diner",
+  note:"Bus in, late dinner at Golden Diner, last train back to Poughkeepsie.",
   stops:[
-   {type:"move",time:"7:10 PM",name:"Arrive Port Authority (PABT)",meta:"42nd St &amp; 8th Ave"},
-   {type:"move",time:"8:00 PM",name:"Subway → Lower East Side",getting:"~35–40 min down to the Madison St / East Broadway area."},
-   {type:"star",time:"9:00 PM",sub:"1¼h",name:"Golden Diner",price:"· reserved ✓",ll:"40.7138,-73.9906",meta:"123 Madison St · <span class='hrs'>closes 10 PM</span> · modern Asian-American diner",desc:"Famous honey-butter pancakes &amp; chicken-katsu sando. Menu leans egg-heavy, so Sudarshan's picks are narrower.",
+   {type:"move",time:"2:30 PM",name:"Uber to the bus (Baltimore)",getting:"Book the Uber ~2:30; bus departs ~3 PM."},
+   {type:"move",time:"7:30 PM",name:"Arrive Port Authority (PABT)",meta:"42nd St &amp; 8th Ave"},
+   {type:"move",time:"7:45 PM",name:"Subway → East Broadway",getting:"~7:45–8:15 PM down to East Broadway (F train)."},
+   {type:"star",time:"9:00 PM",sub:"till 10",name:"Golden Diner",price:"· 9 PM reservation",ll:"40.7138,-73.9906",meta:"123 Madison St · 6 min walk from East Broadway · <span class='hrs'>closes 10 PM</span>",desc:"Modern Asian-American diner. Menu leans egg-heavy, so Sudarshan's picks are narrower.",
     menu:[["Sudarshan","Chili-crisp wedge salad w/ vegan bacon (confirm egg-free), grilled cheese, fries","$$"],["Keerthana","Chicken-katsu sando, Korean fried wings","$$"],["Sravani","Same — chicken (skip beef patty melt)","$$"],["All","Split a dessert",""]]},
-   {type:"move",time:"10:15 PM",name:"Subway → Grand Central → train home",getting:"~25–30 min to GCT, then a late Hudson Line train. Check TrainTime + arrange the pickup."}
+   {type:"move",time:"10:00 PM",name:"Walk to Grand Central (~1 hr)",getting:"Stretch the legs up to GCT, or hop the subway if you're tired."},
+   {type:"move",time:"11:52 PM",name:"Train → Poughkeepsie",getting:"11:52 PM Hudson Line; in ~2 AM, then walk home."}
   ]},
 
  {id:"Friday", num:"DAY 02", dy:"Friday", dt:"JUL 3 · downtown crawl",
-  note:"Your order: Librae → Dosa Man → Magnolia → Saravanaa (with your L'Industrie pick slotted in the Village). Treat most as small shares.",
+  note:"Out on the 7:58 from Poughkeepsie (GC by 10). Village food crawl ending with K-town dessert.",
   stops:[
-   {type:"move",time:"10:30 AM",name:"Train in → Astor Place",getting:"Arrive GCT after 10 AM to stay off-peak. Your note was a 46-min walk; the 6 train to Astor Pl is ~12 min."},
-   {type:"eat",time:"10:45 AM",sub:"35m",name:"Librae Bakery",ll:"40.7281,-73.9908",meta:"35 Cooper Sq · <span class='hrs'>7:30 AM–5 PM</span> · Middle-Eastern-inflected bakery",
+   {type:"move",time:"7:58 AM",name:"Train from Poughkeepsie",getting:"7:58 AM → Grand Central by ~10 AM."},
+   {type:"eat",time:"10:15 AM",sub:"by 11:30",name:"Librae Bakery",ll:"40.7281,-73.9908",meta:"35 Cooper Sq · <span class='hrs'>7:30 AM–5 PM</span> · 15 min subway from GC + 8 min walk",desc:"Breakfast — Middle-Eastern-inflected bakery.",
     menu:[["All","Pistachio-rose croissant (signature), loomi babka, feta-dill scone, focaccia; coffee/matcha","croissant ~$8–9"],["Sudarshan","Ask which pastries are egg-free; skip the shakshuka",""]]},
-   {type:"eat",time:"11:30 AM",sub:"45m",name:"NY Dosas (Dosa Man)",price:"· 100% vegan",ll:"40.7305,-73.9989",meta:"50 Washington Sq S · <span class='hrs'>11 AM–3 PM, Mon–Sat</span> · cart in the park",getting:"~9–12 min walk from Librae.",desc:"A highlight, perfect for everyone — all vegan, all cheap. Eat on a park bench with the buskers.",
+   {type:"eat",time:"2:00 PM",sub:"45m",name:"NY Dosas (Dosa Man)",price:"· 100% vegan",ll:"40.7305,-73.9989",meta:"50 Washington Sq S · <span class='hrs'>11 AM–3 PM</span> · cart in the park",getting:"~12 min walk; chill in Washington Square Park first.",flag:"Expect a line — but on a holiday-weekend day you should be served well before the 3 PM close. Just leave a little buffer.",
     menu:[["All","Masala dosa, Pondicherry special, veg uttapam; extra sambar","~$8 ea · cash"]]},
-   {type:"eat",time:"12:45 PM",sub:"20m",name:"Magnolia Bakery",ll:"40.7359,-74.0049",meta:"401 Bleecker St · <span class='hrs'>till 11 PM</span> · West Village",getting:"~13 min from Dosa Man.",
+   {type:"eat",time:"3:30 PM",sub:"by 5",name:"Magnolia Bakery",ll:"40.7359,-74.0049",meta:"401 Bleecker St · West Village",getting:"~13 min walk from the park.",
     menu:[["All","Banana pudding — egg-free, so Sudarshan's good","~$6 sm / $9 lg"],["Sudarshan","Skip the cupcakes (egg)",""]]},
-   {type:"eat",time:"1:15 PM",sub:"30m",name:"L'Industrie Pizzeria",price:"· your 'Jul 3 or 4' pick",ll:"40.7332,-74.0049",meta:"104 Christopher St · <span class='hrs'>12–10 PM</span> · West Village",getting:"~6 min from Magnolia — sits right between Magnolia and the walk to Curry Hill.",desc:"Some of the best slices in the city; line moves fast.",
-    menu:[["Sudarshan","Burrata slice (the famous one), white / marinara","~$5–7"],["Keerthana","Cheese / veg — skip pepperoni, salami, bacon (pork)","~$5–7"],["Sravani","Same — burrata / cheese","~$5–7"]]},
-   {type:"move",time:"2:30 PM",name:"Heat break + wander the Village",getting:"Coffee / AC, stroll the West Village, then 6 train up toward Curry Hill."},
-   {type:"eat",time:"4:00 PM",sub:"1h",name:"Saravanaa Bhavan",price:"· pure veg",ll:"40.7414,-73.9831",meta:"81 Lexington Ave (@ 26th) · <span class='hrs'>till 10:30 PM</span> · marks vegan/GF",getting:"Your ~37-min walk from the Village, or the 6 train to 28th St.",desc:"Your last Friday stop — a proper South-Indian sit-down.",
+   {type:"eat",time:"6:30 PM",sub:"by 8",name:"Saravanaa Bhavan",price:"· pure veg",ll:"40.7414,-73.9831",meta:"81 Lexington Ave (@ 26th) · <span class='hrs'>till 10:30 PM</span>",getting:"~36 min walk from Magnolia (or the 6 train).",desc:"Sit-down South-Indian dinner.",
     menu:[["All","Ghee-roast masala dosa, idli/medu vada, mini-tiffin, filter coffee","~$13–18"]]},
-   {type:"move",time:"6:30 PM",name:"Train home",getting:"6 train to Grand Central, then up to Poughkeepsie. Pickup at the station."}
+   {type:"eat",time:"8:15 PM",sub:"by 9",name:"Grace Street",price:"· Korean desserts",ll:"40.7478,-73.9865",meta:"17 W 32nd St (Koreatown) · <span class='hrs'>till 12 AM</span>",getting:"~15 min walk from Saravanaa.",desc:"Big shareable desserts — get a few for the table.",
+    menu:[["All","Bingsu (shaved-ice), tiramisu basque cheesecake, Dubai chewy cookie, honey-butter toast","~$10–17, shareable"],["Sudarshan","Stick to shaved-ice / fruit bingsu — the cheesecake &amp; toast have egg",""]]},
+   {type:"move",time:"9:15 PM",name:"Walk to Grand Central (~15 min)"},
+   {type:"move",time:"9:56 PM",name:"Train home",getting:"9:56 PM Hudson Line; home by ~12."}
   ]},
 
- {id:"Saturday", num:"DAY 03", dy:"Saturday", dt:"JUL 4 · Chinatown + Times Sq",
-  note:"Your Chinatown crawl in your order, ending with the 10 PM Din Tai Fung. (Adel's opens 6 PM, so it lands tonight next to DTF — see its note.)",
+ {id:"Saturday", num:"DAY 03", dy:"Saturday", dt:"JUL 4 · Chinatown, free-roam",
+  note:"No fixed stops — graze Chinatown your way till 7, then Din Tai Fung at 10 and the last train home.",
   stops:[
-   {type:"move",time:"11:00 AM",name:"Train in → Chinatown",getting:"Weekend trains are off-peak. Subway down to Canal St."},
-   {type:"eat",time:"11:30 AM",sub:"30m",name:"Los Tacos No.1",ll:"40.7263,-73.9946",meta:"340 Lafayette St · <span class='hrs'>opens 11 AM</span> · NoHo edge · standing",
-    menu:[["Sudarshan","Nopal (cactus) taco/quesadilla or cheese quesadilla — cactus isn't mushroom","~$5–6"],["Keerthana","Pollo (chicken) tacos — skip adobada (pork) &amp; carne asada (beef)","~$5–6"],["Sravani","Same — chicken","~$5–6"]]},
-   {type:"eat",time:"12:30 PM",sub:"1h",name:"Dim Sum Palace",ll:"40.7140,-73.9961",meta:"27 Division St (Chinatown) · <span class='hrs'>10 AM–3 AM</span>",flag:"Lots of dim sum is pork — steer to shrimp/veg/duck; skip siu mai, char-siu &amp; 'juicy pork' buns.",
-    menu:[["Sudarshan","Veg dumplings, plain/veg rice rolls (cheung fun), gai lan, sesame balls (no egg)","~$5–8"],["Keerthana","Har gow (shrimp), shrimp dumplings, duck spring rolls, gai lan","~$5–8"],["Sravani","Same — shrimp/duck/veg","~$5–8"]]},
-   {type:"eat",time:"1:45 PM",sub:"10m",name:"Mei Lai Wah",price:"· optional",optional:true,ll:"40.7152,-73.9989",meta:"41 Mott St · <span class='hrs'>8:30 AM–8 PM</span>",flag:"Iconic bun is roast pork — none of you. Only a plain pineapple/coffee bun works (Sudarshan: ask about egg), or skip."},
-   {type:"move",time:"2:30 PM",name:"Explore Chinatown / heat break",getting:"Wander Chinatown &amp; Little Italy, then later head up to Times Square for the evening."},
-   {type:"eat",time:"6:30 PM",sub:"30m",name:"Adel's Famous Halal",ll:"40.7607,-73.9826",meta:"1221 6th Ave (Midtown) · <span class='hrs'>opens 6 PM</span>",flag:"You listed this 2nd, but it opens at 6 PM and sits up in Midtown — so it works best tonight, ~5 min from Din Tai Fung.",
-    menu:[["Keerthana","Chicken / lamb over rice + white &amp; hot sauce","~$12–14"],["Sravani","Same","~$12–14"],["Sudarshan","Limited (meat-focused) — likely rice + salad; skip if full",""]]},
-   {type:"star",time:"10:00 PM",sub:"1½h",name:"Din Tai Fung",price:"· your 10 PM reservation",ll:"40.7620,-73.9840",meta:"1633 Broadway (Times Square) · <span class='hrs'>Sat till 12 AM</span> · ~22 min walk / 14 min metro to GCT",flag:"Pork xiao long bao won't work for any of you — order chicken &amp; veg dumplings. Note: the July 4 fireworks (~9:25 PM, near the Seaport) clash with this slot — keep DTF, or shift it earlier if you'd rather catch the show.",
+   {type:"move",time:"7:58 AM",name:"Train from Poughkeepsie",getting:"7:58 AM → GC by ~10 AM."},
+   {type:"move",time:"10:15 AM",name:"Subway → Chinatown",getting:"~20 min down to Canal St."},
+   {type:"eat",time:"10:45 AM",sub:"till 7 PM",name:"Explore Chinatown — eat freely",ll:"40.7158,-73.9970",desc:"Roam and eat whatever you like until ~7 PM. Diet-safe ideas in the menu.",
+    menu:[["Sudarshan","Veg dim sum, scallion pancakes, veg dumplings/soup dumplings at a veg spot, sesame balls (no egg)",""],["Keerthana","Shrimp dim sum (har gow), chicken/shrimp noodles, scallion pancakes — chicken &amp; shrimp only, no mushrooms",""],["Sravani","Same — chicken &amp; shrimp only (skip duck, beef, pork)",""]]},
+   {type:"eat",time:"12:00 PM",sub:"opens 11",name:"L'Industrie Pizzeria",ll:"40.7191,-73.9970",meta:"197 Grand St (Little Italy) · <span class='hrs'>opens 11 AM Sat</span> · ~6 min from Chinatown",getting:"~6 min walk from the Chinatown core — easy.",
+    menu:[["Sudarshan","Burrata slice (the famous one), white / marinara","~$5–7"],["Keerthana","Cheese / veg slices — skip pepperoni, salami, bacon (pork) &amp; mushroom","~$5–7"],["Sravani","Same — burrata / cheese","~$5–7"]]},
+   {type:"fw",time:"9:25 PM",name:"Fireworks",when:"~9:25 PM · ~25 min · Brooklyn Bridge + lower East River (Seaport) + lower Hudson",
+    body:"<p>The <b>50th-anniversary Macy's show + America's 250th</b> — biggest ever, on both rivers. The Seaport launch is ~15–20 min from Chinatown.</p><p>You're leaning Din Tai Fung at 10, which clashes with this — so treat this as a <b>only-if-you-skip-DTF</b> option. If you do want it: claim a Seaport / Brooklyn Bridge spot by ~7 PM.</p>"},
+   {type:"star",time:"10:00 PM",sub:"1½h",name:"Din Tai Fung",price:"· 10 PM reservation",ll:"40.7620,-73.9840",meta:"1633 Broadway (Times Square) · ~22 min walk to GCT",flag:"Pork xiao long bao won't work for any of you — order chicken &amp; veg dumplings. (Note: July 4 fireworks ~9:25 PM near the Seaport overlap this slot.)",
     menu:[["Sudarshan","Veggie dumplings, cucumber salad, green beans/bok choy, veg fried rice, chocolate dumplings + mango shaved snow","$$"],["Keerthana","Chicken soup dumplings, chicken dumplings, shrimp fried rice, spicy chicken wontons","$$"],["Sravani","Same — chicken &amp; shrimp","$$"]]},
-   {type:"move",time:"11:45 PM",name:"Times Sq → Grand Central → home",getting:"S shuttle or 7 (~10 min) to GCT, then the last train up. Confirm + pickup."}
+   {type:"move",time:"11:45 PM",name:"Walk to Grand Central (~22 min)"},
+   {type:"move",time:"12:48 AM",name:"Last train home",getting:"12:48 AM Hudson Line — the last one. Confirm in TrainTime + pickup."}
   ]},
 
- {id:"Sunday", num:"DAY 04", dy:"Sunday", dt:"JUL 5 · last morning + 3 PM bus",
-  note:"Your order: Russ &amp; Daughters → Empanada Mama → Thai Diner. Heads-up — these three zig-zag across town before a 3 PM bus, so it's doable but rushed; trim one if it feels tight.",
+ {id:"Sunday", num:"DAY 04", dy:"Sunday", dt:"JUL 5 · one last meal + bus home",
+  note:"One stop today — K-Bap &amp; Wings — then the bus back to Baltimore.",
   stops:[
-   {type:"move",time:"8:30 AM",name:"Leave Poughkeepsie",getting:"Earlier train (~8:30) to land at GCT ~10:15 and fit all three stops before the 3 PM bus."},
-   {type:"eat",time:"10:45 AM",sub:"45m",name:"Russ &amp; Daughters",ll:"40.7226,-73.9883",meta:"179 E Houston St (LES) · <span class='hrs'>8 AM–4 PM</span> · order ahead online",desc:"A NYC 'appetizing' institution — mostly smoked fish; a Keerthana/Sravani highlight, lighter for Sudarshan.",
-    menu:[["Keerthana","Classic lox + everything bagel, pastrami-cured salmon","~$18–22"],["Sravani","Lox / sturgeon board (fish all good)","~$18–22"],["Sudarshan","Bagel + cream cheese / veg options","$"]]},
-   {type:"eat",time:"12:00 PM",sub:"45m",name:"Empanada Mama",ll:"40.7656,-73.9876",meta:"765 9th Ave (Hell's Kitchen) · <span class='hrs'>open 24 h</span> · ~10 min walk to PABT",getting:"~30 min up from Russ &amp; Daughters — the big jump of the morning.",
-    menu:[["Sudarshan","Cheese / spinach-cheese / veggie (ask egg-free); plantains + guac","~$4–6 ea"],["Keerthana","Chicken / jerk — skip Cuban &amp; steak","~$4–6"],["Sravani","Same — chicken/seafood","~$4–6"]]},
-   {type:"eat",time:"1:00 PM",sub:"30m",name:"Thai Diner",ll:"40.7207,-73.9957",meta:"186 Mott St (Nolita) · <span class='hrs'>opens 8 AM</span>",getting:"Back downtown (~25 min) — then a 20-min hop to PABT. Tight; this is the one to cut if you're racing the bus.",
-    menu:[["Sudarshan","Veg/tofu pad thai or pad see ew — ask no fish sauce; roti; Thai iced tea","$$"],["Keerthana","Chicken/seafood curry, papaya salad, crab fried rice (skip pork 'moo')","$$"],["Sravani","Same — chicken/seafood","$$"]]},
-   {type:"star",time:"2:30 PM",name:"Be at Port Authority with bags",meta:"42nd St &amp; 8th Ave · ~30 min buffer before boarding"},
+   {type:"move",time:"7:58 AM",name:"Train from Poughkeepsie",getting:"7:58 AM → GC by ~10 AM."},
+   {type:"star",time:"11:30 AM",sub:"1h",name:"K-Bap &amp; Wings",price:"· 11:30 reservation",ll:"40.7634,-73.9772",meta:"62 W 56th St (Midtown) · <span class='hrs'>opens 11:30 AM</span> · halal · no-tip",desc:"Famous halal Korean fried chicken — the crispy soy-garlic wings are the pick.",
+    menu:[["Sudarshan","Veg bibimbap, soft-tofu soup, veg kimbap — ask for no egg / no ham; japchae","$$"],["Keerthana","Halal fried wings (soy-garlic / original), chicken bibimbap — no mushrooms","$$"],["Sravani","Same — wings + chicken bibimbap","$$"]]},
+   {type:"move",time:"2:00 PM",name:"Walk / subway → Port Authority",getting:"~15–20 min to PABT (42nd &amp; 8th)."},
+   {type:"star",time:"2:30 PM",name:"Be at Port Authority with bags",meta:"42nd St &amp; 8th Ave"},
    {type:"move",time:"3:00 PM",name:"Bus → Baltimore"}
   ]}
 ];
@@ -441,6 +464,14 @@ function dayRouteURL(stops){
 const WHO_COLORS=(()=>{const order=[],map={};DATA.forEach(d=>d.stops.forEach(s=>(s.menu||[]).forEach(([who])=>{if(/^all$/i.test(who)){map[who]='all';return;}if(!(who in map)){order.push(who);map[who]='p'+Math.min(order.length,5);}})));return map;})();
 function whoClass(who){ return WHO_COLORS[who] || (/^all$/i.test(who)?'all':'p1'); }
 
+/* ---- scroll-reveal (smooth fade-in as sections enter view; respects reduced motion) ---- */
+function revealObserve(){
+  const els=document.querySelectorAll('.reveal:not(.in)');
+  if(!('IntersectionObserver' in window)){ els.forEach(el=>el.classList.add('in')); return; }
+  const io=new IntersectionObserver((ents)=>{ ents.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {rootMargin:'0px 0px -8% 0px', threshold:0.05});
+  els.forEach(el=>io.observe(el));
+}
+
 /* ---- per-day Leaflet maps (free, no key): numbered stops + a connecting line ---- */
 let MAPS={};
 function initMaps(){
@@ -471,6 +502,13 @@ function renderDays(){
       const id = sid(day.id, s.name);
       const isDone = done.has(id);
       const t = s.time.split(' ');
+      if(s.type==='fw'){
+        return `<div class="stop star"><div class="time">${t[0]}<small>${t[1]||''}</small></div>
+          <div class="fw${isDone?' done':''}">
+            <div class="fwhead"><input type="checkbox" class="chk" data-id="${id}" ${isDone?'checked':''}>
+            <div class="fwt">The <span>Fireworks</span> · <span style="color:#9aa0a6;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;">optional</span></div></div>
+            <div class="when">${s.when}</div>${s.body}</div></div>`;
+      }
       const menuBtn = (s.menu&&s.menu.length)?`<button class="menubtn" data-id="${id}">Menu ▾</button>`:'';
       const menu = (s.menu&&s.menu.length)?`<div class="menu"><div class="mt">What to order</div><div class="orders">${
         s.menu.map(([who,txt,price])=>`<div class="ord"><span class="tagp tp-${whoClass(who)}">${who}</span><span>${txt}${price?` <span class="price">${price}</span>`:''}</span></div>`).join('')
@@ -494,12 +532,13 @@ function renderDays(){
       <div class="daymap" id="map-${day.id}"></div>
       <a class="routebtn" href="${r.url}" target="_blank" rel="noopener">🗺️ ${r.n>1?`Open ${day.dy}'s walking route in Google Maps (${r.n} stops)`:`Open ${day.dy}'s stop in Google Maps`} →</a>
     </div>`:'';
-    return `<div class="day" id="${day.id.toLowerCase().slice(0,3)}">
+    return `<div class="day reveal" id="${day.id.toLowerCase().slice(0,3)}">
       <div class="dayhead"><span class="num">${day.num}</span><span class="dy">${day.dy}</span><span class="dt">${day.dt}</span></div>
       <p class="daynote">${day.note}</p>${map}<div class="tl">${body}</div></div>`;
   }).join('');
   updateProgress();
   initMaps();
+  revealObserve();
 }
 function countable(){ let n=0; DATA.forEach(d=>d.stops.forEach(s=>{ if(s.type!=='move') n++; })); return n; }
 function updateProgress(){
@@ -543,7 +582,7 @@ async function loadWeather(){
     document.getElementById('wxrain').textContent=(d.daily.precipitation_probability_max[0]??'—')+"%";
     const now=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     st.textContent=w[0]+" "+w[1]+" · "+now;
-    document.getElementById('wxnote').innerHTML="Live as of "+now+", auto-refreshing every 10 min. Your <b>July 2–5</b> trip-day forecast lands here automatically once it's within ~10 days.";
+    document.getElementById('wxnote').innerHTML="Live as of "+now+", auto-refreshing every 10 min.";
   }catch(e){
     // Sandbox/CSP may block external fetch in this preview — degrades to typical July values.
     document.getElementById('wxnow').textContent="~78°";
@@ -567,9 +606,10 @@ document.getElementById('wxrefresh').addEventListener('click',loadWeather);
    ============================================================ */
 const chat=document.getElementById('chat');
 document.getElementById('chattoggle').addEventListener('click',()=>{
-  chat.classList.toggle('open');
-  document.getElementById('chatchev').textContent = chat.classList.contains('open')?'▼ close':'▲ tap to chat';
+  chat.classList.add('open');
+  setTimeout(()=>document.getElementById('cinput').focus(),60);
 });
+document.getElementById('chatclose').addEventListener('click',()=>chat.classList.remove('open'));
 function addMsg(text,cls){ const m=document.createElement('div'); m.className='msg '+cls; m.innerHTML=text; const box=document.getElementById('msgs'); box.appendChild(m); box.scrollTop=box.scrollHeight; return m; }
 
 function findStop(name){ name=name.toLowerCase().replace(/<[^>]*>/g,''); for(const d of DATA){ for(const s of d.stops){ if(s.name.toLowerCase().replace(/<[^>]*>/g,'').includes(name)) return {d,s}; } } return null; }
@@ -636,7 +676,7 @@ function parseCommand(msg){
   const hit=matchStop(m), day=detectDay(m), time=detectTime(m);
   const has=re=>re.test(m);
   if(has(/\b(skip|remove|drop|cancel|delete|get rid of|take out)\b/)){
-    if(!hit) return {reply:"Which place should I skip? e.g. “skip Mei Lai Wah”.",actions:[]};
+    if(!hit) return {reply:"Which place should I skip? e.g. “skip L'Industrie”.",actions:[]};
     return {reply:`Skipped ${plain(hit.s.name)}.`,actions:[{op:"remove",stop:hit.s.name}]};
   }
   const moveIntent = has(/\b(move|shift|put|reschedule|swap|change)\b/) || /\bto\s+(thursday|friday|saturday|sunday|thu|fri|sat|sun)\b/.test(m);
@@ -654,7 +694,7 @@ function parseCommand(msg){
     if(!hit) return {reply:"Which place did you finish? e.g. “mark Dosa Man done”.",actions:[]};
     return {reply:`Marked ${plain(hit.s.name)} done.`,actions:[{op:"check",stop:hit.s.name}]};
   }
-  return {reply:"In free mode I handle changes — try “skip Mei Lai Wah”, “move Thai Diner to Sunday”, “mark Golden Diner done”, or “Dosa Man at 12:30 pm”. (For open questions, switch on free Gemini mode — see the code.)",actions:[]};
+  return {reply:"In free mode I handle changes — try “skip L'Industrie”, “move Grace Street to Saturday”, “mark Golden Diner done”, or “K-Bap at 12 pm”. (For open questions, switch on free Gemini mode — see the code.)",actions:[]};
 }
 
 async function send(){
